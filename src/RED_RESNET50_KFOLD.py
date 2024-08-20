@@ -34,7 +34,11 @@ datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True
 )
-
+img_height = 299
+img_width = 299
+batch_size = 32
+epochs = 50
+rate = 0.01
 
 #Cargar el conjunto de datos desde la carpeta
 dataset = datagen.flow_from_directory(

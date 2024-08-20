@@ -22,6 +22,12 @@ from sklearn.model_selection import KFold
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
 
+img_height = 299
+img_width = 299
+batch_size = 32
+epochs = 50
+rate = 0.01
+
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
     rescale=1./255, # reescalar
