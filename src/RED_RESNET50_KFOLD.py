@@ -190,7 +190,7 @@ for imagenes, etiquetas in test_data:
 # Calcular la matriz de confusión
 conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
 print(etiquetas_verdaderas)
-print("Matriz de Confusión:")
+print("Matriz de Confusion:")
 #print(conf_matrix)
 
 # Crear un DataFrame de la matriz de confusión
