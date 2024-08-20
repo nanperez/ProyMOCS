@@ -20,7 +20,7 @@ import os
 from sklearn.model_selection import KFold
 
 #Ruta de los datos
-data_dir ='DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
+data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
 
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
@@ -96,8 +96,8 @@ VGG16_model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizado
                     )
 
 
-ruta1 = 'Users/Emma.18H/Archivos_Entrenamiento/VGG16_Entrenamiento_01_history_0.001_8_red.txt'
-ruta2= 'Users/Emma.18H/Archivos_Entrenamiento/VGG16_Entrenamiento_01_RESUMEN_0.001_8_red.txt'
+ruta1 = '/home/mocs/src/VGG16_Entrenamiento_01_history_0.001_8_red.txt'
+ruta2= '/home/mocs/src/VGG16_Entrenamiento_01_RESUMEN_0.001_8_red.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -196,7 +196,7 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('matriz_confusion_VGG16_01_0.001_8_red.png')
+plt.savefig('/home/mocs/src/matriz_confusion_VGG16_01_0.001_8_red.png')
 plt.show(heatmap)
 
 # Almacenar valores del entrenamiento
@@ -218,4 +218,4 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-VGG16_model.save('VGG16_0.001_8_red.keras')
+VGG16_model.save('/home/mocs/src/VGG16_0.001_8_red.keras')
