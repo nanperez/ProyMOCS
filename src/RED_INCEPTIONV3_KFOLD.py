@@ -25,7 +25,7 @@ data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
 img_height = 299
 img_width = 299
 batch_size = 64
-epochs = 100
+epochs = 250
 rate = 0.001
 
 #Generar aumento de datos 
@@ -220,9 +220,9 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Promedio max accuracy train:{mean_train_max_accuracy}\n")
     archivo.write(f"Promedio min accuracy val:{mean_val_min_accuracy}\n")
     archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
-    archivo.write(f"Pérdida test:{test_loss}\n")
+    archivo.write(f"Perdida test:{test_loss}\n")
     archivo.write(f"Accuracy test:{test_accuracy}\n")
-    archivo.write(f"Matriz de confusión test:{conf_matrix}\n")
+    archivo.write(f"Matriz de confusion test:{conf_matrix}\n")
     archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
     
 #Guardar el modelo
