@@ -24,9 +24,9 @@ data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
 
 img_height = 299
 img_width = 299
-batch_size = 32
-epochs = 50
-rate = 0.01
+batch_size = 64
+epochs = 100
+rate = 0.001
 
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
@@ -105,8 +105,8 @@ model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el o
 
 )
 
-ruta1 = '/home/mocs/src/Inception_Entrenamiento_03_history_0.01_32_b.txt'
-ruta2= '/home/mocs/src/Inception_Entrenamiento_03_RESUMEN_0.01_32_b.txt'
+ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_64_b.txt'
+ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_64_b.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -181,6 +181,7 @@ tiempo=fin-inicio
 test_loss, test_accuracy = model_Inceptionv3.evaluate(test_data)
 print("Test Loss:", test_loss)
 print("Test Accuracy:", test_accuracy)
+print("Tiempo de entrenamiento:", tiempo)
 
 # Obtener las predicciones del modelo para el conjunto de prueba
 predictions=model_Inceptionv3.predict(test_data)
@@ -205,8 +206,8 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_inception_03_0.01_32_b.png')
-plt.show(heatmap)
+plt.savefig('/home/mocs/src/matriz_confusion_inception_03_0.001_64_b.png')
+#plt.show(heatmap)
 
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
@@ -226,4 +227,4 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-model_Inceptionv3.save('/home/mocs/src/Inceptionv3_03_0.01_32_b.keras')
+model_Inceptionv3.save('/home/mocs/src/Inceptionv3_03_0.001_64_b.keras')
