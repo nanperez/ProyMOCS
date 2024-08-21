@@ -20,11 +20,11 @@ import os
 from sklearn.model_selection import KFold
 
 #Ruta de los datos
-data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
+data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 
 img_height = 299
 img_width = 299
-batch_size = 64
+batch_size = 16
 epochs = 250
 rate = 0.001
 
@@ -105,8 +105,8 @@ model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el o
 
 )
 
-ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_64_b.txt'
-ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_64_b.txt'
+ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_16_c.txt'
+ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_16_c.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -206,10 +206,10 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_inception_03_0.001_64_b.png')
+plt.savefig('/home/mocs/src/matriz_confusion_inception__0.001_16_c.png')
 #plt.show(heatmap)
 
-# Almacenar valores del entrenamiento
+# Almacenar valores del entrenamiento6_
 with open(ruta2, 'w') as archivo:
     # Escribe lo que necesites en el archivo
     archivo.write(f"Min accuracy train:{min_train_accuracy}\n")
@@ -227,4 +227,7 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-model_Inceptionv3.save('/home/mocs/src/Inceptionv3_03_0.001_64_b.keras')
+model_Inceptionv3.save('/home/mocs/src/Inceptionv3__0.001_16_c.keras')
+
+
+
