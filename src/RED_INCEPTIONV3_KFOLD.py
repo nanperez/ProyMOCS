@@ -24,10 +24,10 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 
 img_height = 299
 img_width = 299
-batch_size = 16
+batch_size = 32
 epochs = 250
-rate = 0.001
-print("cambios realizados 1")
+rate = 0.0005
+print("cambios realizados 2")
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
     rescale=1./255, # reescalar
