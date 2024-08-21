@@ -27,7 +27,7 @@ img_width = 299
 batch_size = 16
 epochs = 250
 rate = 0.001
-
+print("cambios realizados 1")
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
     rescale=1./255, # reescalar
