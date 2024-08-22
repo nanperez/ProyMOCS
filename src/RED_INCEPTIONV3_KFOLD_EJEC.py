@@ -116,7 +116,7 @@ max_val_accuracy=[]
 
 # Ejecutar el código 10 veces
 for iteracion_num in range(1, 11):
-  print("Ejecucución:",iteracion_num)
+  print("Ejecucucion:",iteracion_num)
   ruta1 = f'/home/mocs/src/InceptionV3_Entrenamiento_history_0.001_32_c_iteracion_{iteracion_num}.txt'
   ruta2= f'/home/mocs/src/InceptionV3_Entrenamiento_RESUMEN_0.001_32_c_iteracion_{iteracion_num}.txt'
   directorio = os.path.dirname(ruta1)
