@@ -18,16 +18,38 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 from sklearn.model_selection import KFold
+
+
+
+img_height,img_width = 299,299
+
+def modelo_base():
+     modelo_base=InceptionV3(include_top=False,
+     weights="imagenet",
+     input_shape=(img_height, img_width, 3),
+     pooling='avg',
+     classes=2)
+     modelo_base.trainable = False,
+     return modelo_base
 #--------------------------------------------------------------------------------
 
+def create_model():
+    modelo_base=modelo_base()
+    model_Inceptionv3 = Sequential([
+     modelo_base,
+     Flatten(),
+     #Dense(128, activation='relu'),
+     Dense(1, activation='sigmoid')
+    ])
+    return model_Inceptionv3
+#--------------------------------------------------------------------------------
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #--------------------------------------------------------------------------------
 #Parámetros
-img_height,img_width = 299,299
 rate = 0.001
 batch_size = 32
-epochs = 250
+epochs = 300
 
 #--------------------------------------------------------------------------------
 
@@ -83,18 +105,10 @@ test_data = test_data.batch(batch_size)
 print(f"Entrenamiento: {len(train_labels)}")
 print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
-#Modelo Inception_v3
-model=InceptionV3(include_top=False,
-     weights="imagenet",
-     input_shape=(img_height, img_width, 3),
-     pooling='avg',
-     classes=2)
+
 #--------------------------------------------------------------------------------
-# Congelar todas las capas del modelo base vgg16
-model.trainable = False
-#--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_cx.txt'
+ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_cx.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -110,6 +124,8 @@ min_train_accuracy=[]
 max_train_accuracy=[]
 min_val_accuracy=[]
 max_val_accuracy=[]
+test_accuracy = []
+test_losses = []
 
 # Entrenar y validar el modelo utilizando validación cruzada
 train_images = np.array(train_images)
@@ -119,16 +135,10 @@ with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
    
     print(f'Inicia Fold {fold + 1}:\n')
-
+    
     #Estructura del modelo
-    model_Inceptionv3 = Sequential([
-    model,
-    Flatten(),
-    Dense(128, activation='relu'),
-    Dense(1, activation='sigmoid')
-    ])
-
-    model_Inceptionv3.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+    model = create_model()
+    model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
     )
@@ -145,11 +155,14 @@ with open(ruta1, 'w') as f:
     val_data_fold = val_data_fold.batch(batch_size) # conjunto de vaidación
 
     # Entrenar el modelo
-    history = model_Inceptionv3.fit(
+    history = model.fit(
         train_data_fold,
         epochs=epochs,  # Número de épocas de entrenamiento
         validation_data=val_data_fold
     )
+
+#-------------------------------------------------------------------------------------------
+    
 #--------------------------------------------------------------------------------
     f.write(f'Fold {fold + 1}:\n')
     for key in history.history:
@@ -182,13 +195,13 @@ tiempo=fin-inicio
 
 #--------------------------------------------------------------------------------
 # Evaluar el modelo con los datos de prueba
-test_loss, test_accuracy = model_Inceptionv3.evaluate(test_data)
+test_loss, test_accuracy = model.evaluate(test_data)
 print("Test Loss:", test_loss)
 print("Test Accuracy:", test_accuracy)
 print("Tiempo de entrenamiento:", tiempo)
 #--------------------------------------------------------------------------------
 # Obtener las predicciones del modelo para el conjunto de prueba
-predictions=model_Inceptionv3.predict(test_data)
+predictions=model.predict(test_data)
 predicted_classes = np.around(predictions)
 etiquetas_verdaderas = []
 for imagenes, etiquetas in test_data:
@@ -201,7 +214,7 @@ df = pd.DataFrame(conf_matrix)
 sn.set(font_scale=1)
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig(f'/home/mocs/src/InceptionV3_MC_{rate}_{batch_size}_{epochs}_c.png')
+plt.savefig(f'/home/mocs/src/InceptionV3_MC_{rate}_{batch_size}_{epochs}_cx.png')
 
 #--------------------------------------------------------------------------------
 # Almacenar valores del entrenamiento
@@ -221,7 +234,7 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
     
 #Guardar el modelo
-model_Inceptionv3.save(f'/home/mocs/src/InceptionV3_modelo_{rate}_{batch_size}_{epochs}_c.keras')
+model.save(f'/home/mocs/src/InceptionV3_modelo_{rate}_{batch_size}_{epochs}_cx.keras')
 
 
 

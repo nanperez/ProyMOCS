@@ -80,15 +80,7 @@ test_data = test_data.batch(batch_size)
 print(f"Entrenamiento: {len(train_labels)}")
 print(f"Prueba: {len(test_labels)}")
 
-#Configuración del modelo Vgg16
-model= VGG16( include_top=False,
-    weights="imagenet", #pesos preentrenados
-    input_shape=(img_height, img_width, 3), # tamaño de las imagenes de entrada
-    pooling='avg', 
-    classes=2)
 
-# Congelar todas las capas del modelo base vgg16
-model.trainable = False
 
 ruta1 = f'/home/mocs/src/VGG16_history_{rate}_{batch_size}_{epochs}_c.txt'
 ruta2= f'/home/mocs/src/VGG16_resumen_{rate}_{batch_size}_{epochs}_c.txt'
@@ -116,7 +108,16 @@ inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
     print(f'Inicia Fold {fold + 1}:\n')
+    
+    #Configuración del modelo Vgg16
+    model= VGG16( include_top=False,
+    weights="imagenet", #pesos preentrenados
+    input_shape=(img_height, img_width, 3), # tamaño de las imagenes de entrada
+    pooling='avg', 
+    classes=2)
 
+    # Congelar todas las capas del modelo base vgg16
+    model.trainable = False
     #Modelo completo, con una capa densa agregada
     VGG16_model= Sequential([
     model,

@@ -81,16 +81,6 @@ print(f"Entrenamiento: {len(train_labels)}")
 print(f"Prueba: {len(test_labels)}")
 
 
-#Modelo RESNET50
-model= ResNet50( include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
-    classes=2)
-
-# Congelar todas las capas del modelo base 
-model.trainable = False
-
 ruta1 = f'/home/mocs/src/Resnet50_history_{rate}_{batch_size}_{epochs}_c.txt'
 ruta2= f'/home/mocs/src/Resnet50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 
@@ -119,8 +109,18 @@ inicio= time.time()
 
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
-    print(f'Inicia Fold {fold + 1}:\n')     
-  #Estructura del modelo
+    print(f'Inicia Fold {fold + 1}:\n')   
+
+    #Modelo RESNET50
+    model= ResNet50( include_top=False,
+    weights="imagenet",
+    input_shape=(img_height, img_width, 3),
+    pooling='avg',
+    classes=2)
+
+   # Congelar todas las capas del modelo base 
+    model.trainable = False  
+   #Estructura del modelo
     model_RESNET50 = Sequential([
      model,
      Flatten(),
