@@ -20,7 +20,13 @@ import os
 from sklearn.model_selection import KFold
 
 #Ruta de los datos
-data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
+data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
+
+img_height = 299
+img_width = 299
+batch_size = 32
+epochs = 250
+rate = 0.001
 
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
@@ -34,13 +40,7 @@ datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True
 )
-#Tamaño de redimensión de imágenes 
-img_height, img_width = 224,224
-#Hiperparámetros
-batch_size=8 # tamaño de lote 
-epochs=250 #ÉPOCAS
-#Parámetros
-rate=0.01 # Taza de aprendizaje 
+
 
 #Cargar el conjunto de datos desde la carpeta
 dataset = datagen.flow_from_directory(
@@ -79,33 +79,19 @@ print(f"Entrenamiento: {len(train_labels)}")
 #print(f"Validación: {len(val_labels)}")
 print(f"Prueba: {len(test_labels)}")
 
-
-#Modelo RESNET50
-model= ResNet50( include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
-    classes=2)
-
-# Congelar todas las capas del modelo base 
+#Modelo Inception_v3
+#Configuración del modelo
+#Entrenamiento
+model=InceptionV3(include_top=False,
+     weights="imagenet",
+     input_shape=(img_height, img_width, 3),
+     pooling='avg',
+     classes=2)
+# Congelar todas las capas del modelo base vgg16
 model.trainable = False
-#Estructura del modelo
-model_RESNET50 = Sequential([
-    model,
-    Flatten(),
-    Dense(1, activation='sigmoid')
-])
 
-#configura el modelo para el entrenamiento
-model_RESNET50.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
-                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
-                      metrics=['accuracy']# metrica de precisión
-
-)
-
-
-ruta1 = '/home/mocs/src/RESNET50_Entrenamiento_03_history_0.01_32_b.txt'
-ruta2= '/home/mocs/src/RESNET5O_Entrenamiento_03_RESUMEN_0.01_32_b.txt'
+ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_32_c.txt'
+ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_32_c.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -128,6 +114,20 @@ train_labels = np.array(train_labels)
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+
+    #Estructura del modelo
+    model_Inceptionv3 = Sequential([
+    model,
+    Flatten(),
+    Dense(1, activation='sigmoid')
+    ])
+
+    model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+                      metrics=['accuracy']# metrica de precisión
+
+    )
+
   #for fold, (train_index, val_index) in kf.split(train_images):  # Carga el conjunto train_ imagenes para dividirlo
     train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
     train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
@@ -140,7 +140,7 @@ with open(ruta1, 'w') as f:
     val_data_fold = val_data_fold.batch(batch_size) # conjunto de vaidación
 
     # Entrenar el modelo
-    history = model_RESNET50.fit(
+    history = model_Inceptionv3.fit(
         train_data_fold,
         epochs=epochs,  # Número de épocas de entrenamiento
         validation_data=val_data_fold
@@ -149,6 +149,7 @@ with open(ruta1, 'w') as f:
     for key in history.history:
       f.write(f'{key}: {history.history[key]}\n')
     f.write('\n')
+ 
 
 
     # Obtener el menor y el mejor accuracy en el conjunto de entrenamiento
@@ -174,14 +175,16 @@ mean_val_max_accuracy=np.mean(max_val_accuracy)
 fin= time.time()
 tiempo=fin-inicio
 
+
 # Evaluar el modelo con los datos de prueba
 
-test_loss, test_accuracy = model_RESNET50.evaluate(test_data)
+test_loss, test_accuracy = model_Inceptionv3.evaluate(test_data)
 print("Test Loss:", test_loss)
 print("Test Accuracy:", test_accuracy)
+print("Tiempo de entrenamiento:", tiempo)
 
 # Obtener las predicciones del modelo para el conjunto de prueba
-predictions=model_RESNET50.predict(test_data)
+predictions=model_Inceptionv3.predict(test_data)
 predicted_classes = np.around(predictions)
 #print(predicted_classes)
 #obtener la etiquetas verdaderas
@@ -203,10 +206,10 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_RESNET50_03_0.01_32_b.png')
-plt.show(heatmap)
+plt.savefig('/home/mocs/src/matriz_confusion_inception__0.001_32_c.png')
+#plt.show(heatmap)
 
-# Almacenar valores del entrenamiento
+# Almacenar valores del entrenamiento6_
 with open(ruta2, 'w') as archivo:
     # Escribe lo que necesites en el archivo
     archivo.write(f"Min accuracy train:{min_train_accuracy}\n")
@@ -217,15 +220,14 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Promedio max accuracy train:{mean_train_max_accuracy}\n")
     archivo.write(f"Promedio min accuracy val:{mean_val_min_accuracy}\n")
     archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
-    archivo.write(f"Pérdida test:{test_loss}\n")
+    archivo.write(f"Perdida test:{test_loss}\n")
     archivo.write(f"Accuracy test:{test_accuracy}\n")
-    archivo.write(f"Matriz de confusión test:{conf_matrix}\n")
+    archivo.write(f"Matriz de confusion test:{conf_matrix}\n")
     archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
-    
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-model_RESNET50.save('/home/mocs/src/RESNET50_0.01_32_b.keras')
+model_Inceptionv3.save('/home/mocs/src/Inceptionv3__0.0001_32_c.keras')
 
 
 

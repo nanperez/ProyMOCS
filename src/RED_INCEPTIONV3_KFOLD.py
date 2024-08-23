@@ -99,7 +99,7 @@ model_Inceptionv3 = Sequential([
 
 
 
-model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+model_Inceptionv3.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
 

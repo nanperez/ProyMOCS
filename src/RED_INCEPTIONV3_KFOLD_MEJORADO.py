@@ -90,21 +90,6 @@ model=InceptionV3(include_top=False,
 # Congelar todas las capas del modelo base vgg16
 model.trainable = False
 
-#Estructura del modelo
-model_Inceptionv3 = Sequential([
-    model,
-    Flatten(),
-    Dense(1, activation='sigmoid')
-])
-
-
-
-model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
-                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
-                      metrics=['accuracy']# metrica de precisión
-
-)
-
 ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_32_c.txt'
 ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_32_c.txt'
 directorio = os.path.dirname(ruta1)
@@ -129,6 +114,20 @@ train_labels = np.array(train_labels)
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+
+    #Estructura del modelo
+    model_Inceptionv3 = Sequential([
+    model,
+    Flatten(),
+    Dense(1, activation='sigmoid')
+    ])
+
+    model_Inceptionv3.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+                      metrics=['accuracy']# metrica de precisión
+
+    )
+
   #for fold, (train_index, val_index) in kf.split(train_images):  # Carga el conjunto train_ imagenes para dividirlo
     train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
     train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
@@ -150,6 +149,7 @@ with open(ruta1, 'w') as f:
     for key in history.history:
       f.write(f'{key}: {history.history[key]}\n')
     f.write('\n')
+ 
 
 
     # Obtener el menor y el mejor accuracy en el conjunto de entrenamiento
