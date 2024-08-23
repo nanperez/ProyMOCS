@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
 from keras.applications.inception_v3 import InceptionV3
@@ -19,13 +19,15 @@ from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 from sklearn.model_selection import KFold
 
+
+print("modificaciones realizadas con exito")
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 
 img_height = 299
 img_width = 299
 batch_size = 32
-epochs = 250
+epochs = 300
 rate = 0.001
 
 #Generar aumento de datos 
@@ -120,7 +122,7 @@ with open(ruta1, 'w') as f:
     model_Inceptionv3 = Sequential([
     model,
     Flatten(),
-    Dense(128, activation='relu'),
+    Dropout(0.5),
     Dense(1, activation='sigmoid')
     ])
 
