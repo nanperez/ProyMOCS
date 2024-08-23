@@ -18,7 +18,7 @@ from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 from sklearn.model_selection import KFold
-
+from tensorflow.keras.layers import Dropout
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 
@@ -26,7 +26,7 @@ img_height = 299
 img_width = 299
 batch_size = 32
 epochs = 250
-rate = 0.0005
+rate = 0.001
 print("cambios realizados 2")
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
@@ -89,12 +89,16 @@ model=InceptionV3(include_top=False,
      pooling='avg',
      classes=2)
 # Congelar todas las capas del modelo base vgg16
-model.trainable = False
+#model.trainable = False
+#Ajuste fino
+for layer in model.layers[-10:]:  # Descongela las últimas 10 capas
+    layer.trainable = True
 
 #Estructura del modelo
 model_Inceptionv3 = Sequential([
     model,
     Flatten(),
+    #Dropout(0.5),
     Dense(128, activation='relu'),
     Dense(1, activation='sigmoid')
 ])

@@ -26,7 +26,7 @@ img_height = 299
 img_width = 299
 batch_size = 32
 epochs = 250
-rate = 0.0005
+rate = 0.001
 print("cambios realizados 2")
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
@@ -105,8 +105,8 @@ model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el o
 
 )
 
-ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.0005_32_c.txt'
-ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.0005_32_c.txt'
+ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_32_c.txt'
+ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_32_c.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -206,7 +206,7 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_inception__0.0005_32_c.png')
+plt.savefig('/home/mocs/src/matriz_confusion_inception__0.001_32_c.png')
 #plt.show(heatmap)
 
 # Almacenar valores del entrenamiento6_
@@ -227,7 +227,7 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-model_Inceptionv3.save('/home/mocs/src/Inceptionv3__0.0005_32_c.keras')
+model_Inceptionv3.save('/home/mocs/src/Inceptionv3__0.0001_32_c.keras')
 
 
 
