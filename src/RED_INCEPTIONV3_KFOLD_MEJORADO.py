@@ -123,6 +123,7 @@ with open(ruta1, 'w') as f:
     model,
     Flatten(),
     Dropout(0.5),
+    Dense(128, activation='relu'),
     Dense(1, activation='sigmoid')
     ])
 

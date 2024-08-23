@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.inception_v3 import InceptionV3
+from keras.applications.vgg16 import VGG16
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -20,27 +20,27 @@ import os
 from sklearn.model_selection import KFold
 
 #Ruta de los datos
-data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
+data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 
 #Tamaño de redimensión de imágenes 
 img_height, img_width = 224,224
 #Hiperparámetros
-batch_size=8 # tamaño de lote 
-epochs=250 #ÉPOCAS
-#Parámetros
-rate=0.01 # Taza de aprendizaje 
+rate = 0.001
+batch_size = 32
+epochs = 250
 
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
     rescale=1./255, # reescalar
-    rotation_range=40, #rotación 
-    width_shift_range=0.2,
-    height_shift_range=0.2,
+    rotation_range=55, #rotación 
+    width_shift_range=0.25,
+    height_shift_range=0.25,
     brightness_range=(0.5, 1.5),
     shear_range=0.2,
-    zoom_range=0.2,
+    zoom_range=0.3,
     horizontal_flip=True,
-    vertical_flip=True
+    vertical_flip=True,
+    fill_mode='nearest'
 )
 
 
@@ -78,7 +78,6 @@ test_data = test_data.batch(batch_size)
 
 # Imprime cuántas imágenes pertenecen a cada conjunto
 print(f"Entrenamiento: {len(train_labels)}")
-#print(f"Validación: {len(val_labels)}")
 print(f"Prueba: {len(test_labels)}")
 
 #Configuración del modelo Vgg16
@@ -90,22 +89,9 @@ model= VGG16( include_top=False,
 
 # Congelar todas las capas del modelo base vgg16
 model.trainable = False
-#Modelo completo, con una capa densa agregada
-VGG16_model= Sequential([
-  model,
-  Flatten(),
-  Dense(1,activation='sigmoid')
-])
 
-#Copilar el modelo
-VGG16_model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje rate
-                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
-                      metrics=['accuracy']# metrica de precisión
-                    )
-
-
-ruta1 = '/home/mocs/src/VGG16_Entrenamiento_01_history_0.001_8_red.txt'
-ruta2= '/home/mocs/src/VGG16_Entrenamiento_01_RESUMEN_0.001_8_red.txt'
+ruta1 = f'/home/mocs/src/VGG16_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/VGG16_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -114,13 +100,14 @@ if not os.path.exists(directorio):
     os.makedirs(directorio)
     
 #Incorporación de la validación cruzada
+#Incorporación de la validación cruzada
 k = 5
-kf = KFold(n_splits=k)
-inicio= time.time()
+kf = KFold(n_splits=k, shuffle=True, random_state=42)
 min_train_accuracy=[]
 max_train_accuracy=[]
 min_val_accuracy=[]
 max_val_accuracy=[]
+
 
 # Entrenar y validar el modelo utilizando validación cruzada
 train_images = np.array(train_images)
@@ -128,6 +115,22 @@ train_labels = np.array(train_labels)
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+    print(f'Inicia Fold {fold + 1}:\n')
+
+    #Modelo completo, con una capa densa agregada
+    VGG16_model= Sequential([
+    model,
+    Flatten(),
+    Dense(1,activation='sigmoid')
+    ])
+
+#Copilar el modelo
+    VGG16_model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje rate
+                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+                      metrics=['accuracy']# metrica de precisión
+       )
+
+
   #for fold, (train_index, val_index) in kf.split(train_images):  # Carga el conjunto train_ imagenes para dividirlo
     train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
     train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
@@ -192,9 +195,7 @@ for imagenes, etiquetas in test_data:
     etiquetas_verdaderas.extend(etiquetas.numpy())
 # Calcular la matriz de confusión
 conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
-print(etiquetas_verdaderas)
-print("Matriz de Confusion:")
-#print(conf_matrix)
+
 
 # Crear un DataFrame de la matriz de confusión
 df = pd.DataFrame(conf_matrix)
@@ -204,8 +205,7 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_VGG16_01_0.001_8_red.png')
-plt.show(heatmap)
+plt.savefig(f'/home/mocs/src/VGG16_MC_{rate}_{batch_size}_{epochs}_c.png')
 
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
@@ -226,4 +226,4 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-VGG16_model.save('/home/mocs/src/VGG16_0.001_8_red.keras')
+VGG16_model.save(f'/home/mocs/src/InceptionV3_modelo_{rate}_{batch_size}_{epochs}_c.keras')

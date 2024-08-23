@@ -93,8 +93,8 @@ model=InceptionV3(include_top=False,
 # Congelar todas las capas del modelo base vgg16
 model.trainable = False
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/I_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/I_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -106,7 +106,6 @@ if not os.path.exists(directorio):
 #Incorporación de la validación cruzada
 k = 5
 kf = KFold(n_splits=k, shuffle=True, random_state=42)
-inicio= time.time()
 min_train_accuracy=[]
 max_train_accuracy=[]
 min_val_accuracy=[]
@@ -118,6 +117,8 @@ train_labels = np.array(train_labels)
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+   
+    print(f'Inicia Fold {fold + 1}:\n')
 
     #Estructura del modelo
     model_Inceptionv3 = Sequential([
@@ -200,7 +201,7 @@ df = pd.DataFrame(conf_matrix)
 sn.set(font_scale=1)
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig(f'/home/mocs/src/I_MC_{rate}_{batch_size}_{epochs}_c.png')
+plt.savefig(f'/home/mocs/src/InceptionV3_MC_{rate}_{batch_size}_{epochs}_c.png')
 
 #--------------------------------------------------------------------------------
 # Almacenar valores del entrenamiento
@@ -220,7 +221,7 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
     
 #Guardar el modelo
-model_Inceptionv3.save(f'/home/mocs/src/I_modelo_{rate}_{batch_size}_{epochs}_c.keras')
+model_Inceptionv3.save(f'/home/mocs/src/InceptionV3_modelo_{rate}_{batch_size}_{epochs}_c.keras')
 
 
 

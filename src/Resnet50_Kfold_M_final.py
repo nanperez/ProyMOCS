@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.inception_v3 import InceptionV3
+from keras.applications.resnet50 import ResNet50
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -20,27 +20,29 @@ import os
 from sklearn.model_selection import KFold
 
 #Ruta de los datos
-data_dir ='/home/mocs/data/DataSet_Blue_Pineapple_Part1' # imagenes del conjunto
+data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
+
+#Tamaño de redimensión de imágenes 
+img_height, img_width = 224,224
+#Hiperparámetros
+rate = 0.001
+batch_size = 32
+epochs = 250
 
 #Generar aumento de datos 
 datagen = ImageDataGenerator(
     rescale=1./255, # reescalar
-    rotation_range=40, #rotación 
-    width_shift_range=0.2,
-    height_shift_range=0.2,
+    rotation_range=55, #rotación 
+    width_shift_range=0.25,
+    height_shift_range=0.25,
     brightness_range=(0.5, 1.5),
     shear_range=0.2,
-    zoom_range=0.2,
+    zoom_range=0.3,
     horizontal_flip=True,
-    vertical_flip=True
+    vertical_flip=True,
+    fill_mode='nearest'
 )
-#Tamaño de redimensión de imágenes 
-img_height, img_width = 224,224
-#Hiperparámetros
-batch_size=8 # tamaño de lote 
-epochs=250 #ÉPOCAS
-#Parámetros
-rate=0.01 # Taza de aprendizaje 
+
 
 #Cargar el conjunto de datos desde la carpeta
 dataset = datagen.flow_from_directory(
@@ -52,7 +54,6 @@ dataset = datagen.flow_from_directory(
 )
 # Obtener la lista de nombres de clase
 class_names = dataset.class_indices
-
 # Imprimir los nombres de las clases
 print("Nombres de las clases:", class_names)
 
@@ -89,23 +90,10 @@ model= ResNet50( include_top=False,
 
 # Congelar todas las capas del modelo base 
 model.trainable = False
-#Estructura del modelo
-model_RESNET50 = Sequential([
-    model,
-    Flatten(),
-    Dense(1, activation='sigmoid')
-])
 
-#configura el modelo para el entrenamiento
-model_RESNET50.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
-                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
-                      metrics=['accuracy']# metrica de precisión
+ruta1 = f'/home/mocs/src/Resnet50_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/Resnet50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 
-)
-
-
-ruta1 = '/home/mocs/src/RESNET50_Entrenamiento_03_history_0.01_32_b.txt'
-ruta2= '/home/mocs/src/RESNET5O_Entrenamiento_03_RESUMEN_0.01_32_b.txt'
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
     os.makedirs(directorio)
@@ -114,20 +102,37 @@ if not os.path.exists(directorio):
     os.makedirs(directorio)
     
 #Incorporación de la validación cruzada
+#Incorporación de la validación cruzada
 k = 5
-kf = KFold(n_splits=k)
-inicio= time.time()
+kf = KFold(n_splits=k, shuffle=True, random_state=42)
 min_train_accuracy=[]
 max_train_accuracy=[]
 min_val_accuracy=[]
 max_val_accuracy=[]
 
+
+# Entrenar y validar el modelo utilizando validación cruzada
 # Entrenar y validar el modelo utilizando validación cruzada
 train_images = np.array(train_images)
 train_labels = np.array(train_labels)
 inicio= time.time()
+
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+    print(f'Inicia Fold {fold + 1}:\n')     
+  #Estructura del modelo
+    model_RESNET50 = Sequential([
+     model,
+     Flatten(),
+     Dense(1, activation='sigmoid')
+    ])
+
+#configura el modelo para el entrenamiento
+    model_RESNET50.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+                      metrics=['accuracy']# metrica de precisión
+
+    )  
   #for fold, (train_index, val_index) in kf.split(train_images):  # Carga el conjunto train_ imagenes para dividirlo
     train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
     train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
@@ -162,6 +167,7 @@ with open(ruta1, 'w') as f:
     max_train_accuracy.append(max_train_accuracy_k)
     min_val_accuracy.append(min_val_accuracy_k)
     max_val_accuracy.append(max_val_accuracy_k)
+
 min_train_accuracy = np.array(min_train_accuracy)
 max_train_accuracy= np.array(max_train_accuracy)
 min_val_acuracy = np.array(min_val_accuracy)
@@ -183,7 +189,7 @@ print("Test Accuracy:", test_accuracy)
 # Obtener las predicciones del modelo para el conjunto de prueba
 predictions=model_RESNET50.predict(test_data)
 predicted_classes = np.around(predictions)
-#print(predicted_classes)
+
 #obtener la etiquetas verdaderas
 etiquetas_verdaderas = []
 for imagenes, etiquetas in test_data:
@@ -191,10 +197,6 @@ for imagenes, etiquetas in test_data:
     etiquetas_verdaderas.extend(etiquetas.numpy())
 # Calcular la matriz de confusión
 conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
-print(etiquetas_verdaderas)
-print("Matriz de Confusion:")
-#print(conf_matrix)
-
 # Crear un DataFrame de la matriz de confusión
 df = pd.DataFrame(conf_matrix)
 
@@ -203,8 +205,7 @@ sn.set(font_scale=1)
 
 # Crear el mapa de calor
 heatmap = sn.heatmap(df, annot=True, annot_kws={"size": 20}, cmap='BuPu')
-plt.savefig('/home/mocs/src/matriz_confusion_RESNET50_03_0.01_32_b.png')
-plt.show(heatmap)
+plt.savefig(f'/home/mocs/src/Resnet50_MC_{rate}_{batch_size}_{epochs}_c.png')
 
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
@@ -225,7 +226,7 @@ with open(ruta2, 'w') as archivo:
     
 #Guardar el modelo
 #model_RESNET50.save('RESNET50_0.001_32_c.h5')
-model_RESNET50.save('/home/mocs/src/RESNET50_0.01_32_b.keras')
+model_RESNET50.save(f'/home/mocs/src/Resnet50_modelo_{rate}_{batch_size}_{epochs}_c.keras')
 
 
 
