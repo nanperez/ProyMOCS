@@ -38,7 +38,8 @@ datagen = ImageDataGenerator(
     shear_range=0.2,
     zoom_range=0.2,
     horizontal_flip=True,
-    vertical_flip=True
+    vertical_flip=True,
+    fill_mode='nearest'
 )
 
 
@@ -101,7 +102,7 @@ if not os.path.exists(directorio):
     
 #Incorporación de la validación cruzada
 k = 5
-kf = KFold(n_splits=k)
+kf = KFold(n_splits=k, shuffle=True, random_state=42)
 inicio= time.time()
 min_train_accuracy=[]
 max_train_accuracy=[]
@@ -119,16 +120,16 @@ with open(ruta1, 'w') as f:
     model_Inceptionv3 = Sequential([
     model,
     Flatten(),
+    Dense(128, activation='relu'),
     Dense(1, activation='sigmoid')
     ])
 
     model_Inceptionv3.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
-
     )
 
-  #for fold, (train_index, val_index) in kf.split(train_images):  # Carga el conjunto train_ imagenes para dividirlo
+    # Carga el conjunto train_ imagenes para dividirlo
     train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
     train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
     # Convierte las listas nuevamente en tensores

@@ -38,7 +38,8 @@ datagen = ImageDataGenerator(
     shear_range=0.2,
     zoom_range=0.2,
     horizontal_flip=True,
-    vertical_flip=True
+    vertical_flip=True,
+    fill_mode='nearest'
 )
 
 
@@ -87,8 +88,12 @@ model=InceptionV3(include_top=False,
      input_shape=(img_height, img_width, 3),
      pooling='avg',
      classes=2)
-# Congelar todas las capas del modelo base vgg16
-model.trainable = False
+
+#Incorporando Ajuste fino
+
+for layer in model.layers[-5:]:  # Descongela las últimas 12 capas
+    layer.trainable = True
+
 
 ruta1 = '/home/mocs/src/Inception_Entrenamiento_history_0.001_32_c.txt'
 ruta2= '/home/mocs/src/Inception_Entrenamiento_RESUMEN_0.001_32_c.txt'
@@ -119,10 +124,13 @@ with open(ruta1, 'w') as f:
     model_Inceptionv3 = Sequential([
     model,
     Flatten(),
+    #Dropout(0.5),
+    Dense(128, activation='relu'),
     Dense(1, activation='sigmoid')
     ])
 
-    model_Inceptionv3.compile(optimizer=Adagrad(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+
+    model_Inceptionv3.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
 
