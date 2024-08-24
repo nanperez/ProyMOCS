@@ -198,6 +198,7 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
+#test_data_np = np.array([x for x, _ in test_data])
 for i, model in enumerate(modelos):
     print(f"Evaluando modelo {i+1}:")
     
@@ -220,7 +221,7 @@ for i, model in enumerate(modelos):
     etiquetas_verdaderas = []
     for imagenes, etiquetas in test_data:
         etiquetas_verdaderas.extend(etiquetas.numpy())
-
+    print(etiquetas_verdaderas)
     # Calcular la matriz de confusión para el modelo actual
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
