@@ -226,7 +226,7 @@ predicted_classes_final = np.argmax(resultados, axis=1)
 
 # Calcular la precisión final en el conjunto de prueba
 final_accuracy = np.mean(predicted_classes_final == test_data.classes)
-print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
+print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 
 # Calcular la matriz de confusión final
 conf_matrix_final = confusion_matrix(test_data.classes, predicted_classes_final)
@@ -246,7 +246,7 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
     archivo.write(f"Perdida, acurracy test por cada k-fold:{results}\n")
     archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
-    archivo.write(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}\n")
-    archivo.write(f"Matriz de confusión final:\n{conf_matrix_final}\n")
+    archivo.write(f"Precision promedio final en el conjunto de prueba: {final_accuracy}\n")
+    archivo.write(f"Matriz de confusion final:\n{conf_matrix_final}\n")
     archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
     
