@@ -220,9 +220,6 @@ for i, model in enumerate(modelos):
     etiquetas_verdaderas = []
     for imagenes, etiquetas in test_data:
         etiquetas_verdaderas.extend(etiquetas.numpy())
-    
-    # Convertir etiquetas verdaderas a clases si es necesario
-    etiquetas_verdaderas = np.argmax(etiquetas_verdaderas, axis=1)
 
     # Calcular la matriz de confusión para el modelo actual
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
