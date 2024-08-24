@@ -198,8 +198,6 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
-num_samples = sum(1 for _ in test_data)
-predicciones_acumuladas = np.zeros((test_data.samples, 2))
 for i, model in enumerate(modelos):
     print(f"Evaluando modelo {i+1}:")
     
@@ -214,31 +212,40 @@ for i, model in enumerate(modelos):
 
      #Acumular las predicciones para el promedio
     predictions = model.predict(test_data)
-    predicciones_acumuladas += predictions
+    # Convertir las predicciones en clases
+    predicted_classes = np.argmax(predictions, axis=1)
     
     # Calcular la matriz de confusión por modelo
-    predicted_classes = np.argmax(predictions, axis=1)
+    # Obtener las etiquetas verdaderas directamente del conjunto de prueba
     etiquetas_verdaderas = []
     for imagenes, etiquetas in test_data:
         etiquetas_verdaderas.extend(etiquetas.numpy())
+    
+    # Convertir etiquetas verdaderas a clases si es necesario
+    etiquetas_verdaderas = np.argmax(etiquetas_verdaderas, axis=1)
+
+    # Calcular la matriz de confusión para el modelo actual
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
 
-# Promediar las predicciones acumuladas de todos los modelos
+# Promediar las predicciones de todos los modelos
+predicciones_acumuladas = np.zeros_like(predictions)
+
+for model in modelos:
+    preds = model.predict(test_data)
+    predicciones_acumuladas += preds
+
 predicciones_acumuladas /= len(modelos)
 
 # Convertir las predicciones promediadas a clases finales
 predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
 
 # Calcular la precisión final en el conjunto de prueba
-final_accuracy = np.mean(predicted_classes_final == test_data.classes)
+final_accuracy = np.mean(predicted_classes_final == etiquetas_verdaderas)
 print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
 
-
 # Calcular la matriz de confusión final
-conf_matrix_final = confusion_matrix(test_data.classes, predicted_classes_final)
-
-# Crear un DataFrame de la matriz de confusión
+conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
 #--------------------------------------------------------------------------------
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
