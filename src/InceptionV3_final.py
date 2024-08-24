@@ -218,33 +218,23 @@ for i, model in enumerate(modelos):
      #Acumular las predicciones para el promedio
     predictions = model.predict(test_data)
     # Convertir las predicciones en clases
-    predicted_classes = np.argmax(predictions, axis=1)
+
+    # Acumulación de predicciones
+    if i == 0:
+        predicciones_acumuladas = np.zeros_like(predictions)
     
-    # Calcular la matriz de confusión por modelo
-    # Obtener las etiquetas verdaderas directamente del conjunto de prueba
-    # Calcular la matriz de confusión para el modelo actual
+    predicciones_acumuladas += predictions
+
+    predicted_classes = np.argmax(predictions, axis=1)
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
 
-# Promediar las predicciones de todos los modelos
-predicciones_acumuladas = np.zeros_like(predictions)
-
-for model in modelos:
-    preds = model.predict(test_data)
-    predicciones_acumuladas += preds
-
 predicciones_acumuladas /= len(modelos)
-
-# Convertir las predicciones promediadas a clases finales
 predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
-
-# Calcular la precisión final en el conjunto de prueba
-final_accuracy = np.mean(predicted_classes_final == etiquetas_verdaderas)
+final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 
-# Calcular la matriz de confusión final
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
-#--------------------------------------------------------------------------------
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
     # Escribe lo que necesites en el archivo
