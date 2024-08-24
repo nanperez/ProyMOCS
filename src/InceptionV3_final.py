@@ -198,11 +198,14 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
-etiquetas_verdaderas = []
-for imagenes, etiquetas in test_data:
-        etiquetas_verdaderas.extend(etiquetas.numpy())
-print(etiquetas_verdaderas)
+#etiquetas_verdaderas = []
+#for imagenes, etiquetas in test_data:
+#        etiquetas_verdaderas.extend(etiquetas.numpy())
+#print(etiquetas_verdaderas)
 #test_data_np = np.array([x for x, _ in test_data])
+# Convertir test_data en una lista de imágenes y etiquetas para predicción
+test_images_np = np.array([x for x, _ in test_data])
+etiquetas_verdaderas = np.array([y for _, y in test_data])
 for i, model in enumerate(modelos):
     print(f"Evaluando modelo {i+1}:")
     
@@ -215,11 +218,8 @@ for i, model in enumerate(modelos):
     resultados.append(test_acc)
 
 
-     #Acumular las predicciones para el promedio
-    predictions = model.predict(test_data)
-    # Convertir las predicciones en clases
-
-    # Acumulación de predicciones
+     #Acumulación de predicciones
+    predictions = model.predict(test_images_np)
     if i == 0:
         predicciones_acumuladas = np.zeros_like(predictions)
     
@@ -231,10 +231,11 @@ for i, model in enumerate(modelos):
 
 predicciones_acumuladas /= len(modelos)
 predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
-final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
+final_accuracy = np.mean(predicted_classes_final == etiquetas_verdaderas)
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
+
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
     # Escribe lo que necesites en el archivo
