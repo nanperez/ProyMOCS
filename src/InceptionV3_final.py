@@ -198,6 +198,7 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
+num_samples = sum(1 for _ in test_data)
 predicciones_acumuladas = np.zeros((test_data.samples, 2))
 for i, model in enumerate(modelos):
     print(f"Evaluando modelo {i+1}:")
