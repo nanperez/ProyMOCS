@@ -239,7 +239,7 @@ predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
 
 # Calcular la precisión final en el conjunto de prueba
 final_accuracy = np.mean(predicted_classes_final == etiquetas_verdaderas)
-print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
+print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 
 # Calcular la matriz de confusión final
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
