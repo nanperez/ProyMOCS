@@ -3,7 +3,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Dense, Flatten
+from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
 from keras.applications.inception_v3 import InceptionV3
@@ -38,7 +38,8 @@ def create_model():
     model_Inceptionv3 = Sequential([
      modelo_base,
      Flatten(),
-     #Dense(128, activation='relu'),
+     Dropout(0.5),
+     Dense(128, activation='relu'),
      Dense(1, activation='sigmoid')
     ])
     return model_Inceptionv3
