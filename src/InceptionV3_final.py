@@ -49,7 +49,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #Parámetros
 rate = 0.001
 batch_size = 32
-epochs = 3
+epochs = 300
 
 #--------------------------------------------------------------------------------
 
@@ -107,8 +107,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_cx.txt'
-ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_cx.txt'
+ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -203,13 +203,13 @@ for imagenes, etiquetas in test_data:
 print(etiquetas_verdaderas)
 #test_data_np = np.array([x for x, _ in test_data])
 for i, model in enumerate(modelos):
-    print(f"Evaluando modelo {i+1}:")
+    #print(f"Evaluando modelo {i+1}:")
     
     # Obtener las predicciones del modelo en el conjunto de prueba
     test_loss, test_acc = model.evaluate(test_data)
     
-    print(f"Perdida en el conjunto de prueba: {test_loss}")
-    print(f"Precision en el conjunto de prueba: {test_acc}")
+    #print(f"Perdida en el conjunto de prueba: {test_loss}")
+    #print(f"Precision en el conjunto de prueba: {test_acc}")
     results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc})
     resultados.append(test_acc)
 
@@ -232,7 +232,7 @@ predicciones_acumuladas /= len(modelos)
 predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
-
+print("Tiempo de entrenamiento:",tiempo)
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
