@@ -23,7 +23,7 @@ from sklearn.model_selection import KFold
 
 img_height,img_width = 299,299
 
-def modelo_base():
+def create_modelo_base():
      modelo_base=InceptionV3(include_top=False,
      weights="imagenet",
      input_shape=(img_height, img_width, 3),
@@ -34,7 +34,7 @@ def modelo_base():
 #--------------------------------------------------------------------------------
 
 def create_model():
-    modelo_base=modelo_base()
+    modelo_base=create_modelo_base()
     model_Inceptionv3 = Sequential([
      modelo_base,
      Flatten(),
