@@ -204,8 +204,8 @@ for i, model in enumerate(modelos):
     # Obtener las predicciones del modelo en el conjunto de prueba
     test_loss, test_acc = model.evaluate(test_data)
     
-    print(f"Pérdida en el conjunto de prueba: {test_loss}")
-    print(f"Precisión en el conjunto de prueba: {test_acc}")
+    print(f"Perdida en el conjunto de prueba: {test_loss}")
+    print(f"Precision en el conjunto de prueba: {test_acc}")
     results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc})
     resultados.append=(test_acc)
     predictions=model.predict(test_data)
