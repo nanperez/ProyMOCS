@@ -29,7 +29,7 @@ def create_modelo_base():
      input_shape=(img_height, img_width, 3),
      pooling='avg',
      classes=2)
-     modelo_base.trainable = False,
+     modelo_base.trainable = False
      return modelo_base
 #--------------------------------------------------------------------------------
 
@@ -198,6 +198,7 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
+predicciones_acumuladas = np.zeros((test_data.samples, 2))
 for i, model in enumerate(modelos):
     print(f"Evaluando modelo {i+1}:")
     
@@ -207,26 +208,31 @@ for i, model in enumerate(modelos):
     print(f"Perdida en el conjunto de prueba: {test_loss}")
     print(f"Precision en el conjunto de prueba: {test_acc}")
     results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc})
-    resultados.append=(test_acc)
-    predictions=model.predict(test_data)
+    resultados.append(test_acc)
+
+
+     #Acumular las predicciones para el promedio
+    predictions = model.predict(test_data)
+    predicciones_acumuladas += predictions
+    
+    # Calcular la matriz de confusión por modelo
     predicted_classes = np.argmax(predictions, axis=1)
     etiquetas_verdaderas = []
     for imagenes, etiquetas in test_data:
-       etiquetas_verdaderas.extend(etiquetas.numpy())
-# Calcular la matriz de confusión
+        etiquetas_verdaderas.extend(etiquetas.numpy())
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
 
-#--------------------------------------------------------------------------------
-# Obtener las predicciones del modelo para el conjunto de prueba
-# Promediar las predicciones
-resultados /= len(modelos)
+# Promediar las predicciones acumuladas de todos los modelos
+predicciones_acumuladas /= len(modelos)
+
 # Convertir las predicciones promediadas a clases finales
-predicted_classes_final = np.argmax(resultados, axis=1)
+predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
 
 # Calcular la precisión final en el conjunto de prueba
 final_accuracy = np.mean(predicted_classes_final == test_data.classes)
-print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
+print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
+
 
 # Calcular la matriz de confusión final
 conf_matrix_final = confusion_matrix(test_data.classes, predicted_classes_final)
