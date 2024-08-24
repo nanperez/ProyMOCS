@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.inception_v3 import InceptionV3
+from keras.applications.resnet50 import ResNet50
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -19,36 +19,36 @@ import os
 from sklearn.model_selection import KFold
 
 
-
-img_height,img_width = 299,299
+#Tamaño de redimensión de imágenes 
+img_height, img_width = 224,224
 
 def create_modelo_base():
-     modelo_base=InceptionV3(include_top=False,
-     weights="imagenet",
-     input_shape=(img_height, img_width, 3),
-     pooling='avg',
-     classes=2)
+     modelo_base=ResNet50( include_top=False,
+    weights="imagenet",
+    input_shape=(img_height, img_width, 3),
+    pooling='avg',
+    classes=2)
      modelo_base.trainable = False
      return modelo_base
 #--------------------------------------------------------------------------------
 
 def create_model():
     modelo_base=create_modelo_base()
-    model_Inceptionv3 = Sequential([
+    model_RESNET50 = Sequential([
      modelo_base,
      Flatten(),
      Dropout(0.5),
      Dense(128, activation='relu'),
      Dense(1, activation='sigmoid')
     ])
-    return model_Inceptionv3
+    return model_RESNET50
 #--------------------------------------------------------------------------------
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #--------------------------------------------------------------------------------
 #Parámetros
-rate = 0.01
-batch_size = 64
+rate = 0.001
+batch_size = 32
 epochs = 300
 
 #--------------------------------------------------------------------------------
@@ -107,8 +107,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/RESNET50_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/RESNET50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
