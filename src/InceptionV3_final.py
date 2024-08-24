@@ -99,7 +99,8 @@ train_images, test_images, train_labels, test_labels = train_test_split(
 # Convierte las listas test nuevamente en tensores
 test_data = tf.data.Dataset.from_tensor_slices((test_images, test_labels))
 #Mezclar los datos  en lotes
-test_data = test_data.batch(batch_size)
+#test_data = test_data.batch(batch_size)
+test_data = tf.data.Dataset.from_tensor_slices((test_images, test_labels)).batch(batch_size)
 
 #--------------------------------------------------------------------------------
 # Imprime cuántas imágenes pertenecen a cada conjunto
@@ -198,9 +199,9 @@ tiempo=fin-inicio
 results = []
 resultados=[]
 matrices_confusion=[]
-#etiquetas_verdaderas = []
+etiquetas_verdaderas = []
 #for imagenes, etiquetas in test_data:
-#        etiquetas_verdaderas.extend(etiquetas.numpy())
+#    etiquetas_verdaderas.extend(etiquetas.numpy())
 #print(etiquetas_verdaderas)
 #test_data_np = np.array([x for x, _ in test_data])
 # Convertir test_data en una lista de imágenes y etiquetas para predicción
