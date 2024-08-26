@@ -37,8 +37,6 @@ def create_model():
     model_RESNET50 = Sequential([
      modelo_base,
      Flatten(),
-     Dropout(0.5),
-     Dense(128, activation='relu'),
      Dense(1, activation='sigmoid')
     ])
     return model_RESNET50
@@ -47,8 +45,8 @@ def create_model():
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #--------------------------------------------------------------------------------
 #Parámetros
-rate = 0.001
-batch_size = 16
+rate = 0.01
+batch_size = 64
 epochs = 300
 
 #--------------------------------------------------------------------------------
@@ -125,9 +123,9 @@ max_train_accuracy=[]
 min_val_accuracy=[]
 max_val_accuracy=[]
 modelos=[]
-# Entrenar y validar el modelo utilizando validación cruzada
-train_images = np.array(train_images)
-train_labels = np.array(train_labels)
+# Crear el modelo base y guardar los pesos iniciales
+model = create_model()
+initial_weights = model.get_weights()
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
@@ -135,7 +133,8 @@ with open(ruta1, 'w') as f:
     print(f'Inicia Fold {fold + 1}:\n')
     
     #Estructura del modelo
-    model = create_model()
+    model.set_weights(initial_weights)
+
     model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión

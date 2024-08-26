@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.resnet50 import ResNet50
+from keras.applications.inception_v3 import InceptionV3
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -19,29 +19,27 @@ import os
 from sklearn.model_selection import KFold
 
 
-#Tamaño de redimensión de imágenes 
-img_height, img_width = 224,224
+
+img_height,img_width = 299,299
 
 def create_modelo_base():
-     modelo_base=ResNet50( include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
-    classes=2)
+     modelo_base=InceptionV3(include_top=False,
+     weights="imagenet",
+     input_shape=(img_height, img_width, 3),
+     pooling='avg',
+     classes=2)
      modelo_base.trainable = False
      return modelo_base
 #--------------------------------------------------------------------------------
 
 def create_model():
     modelo_base=create_modelo_base()
-    model_RESNET50 = Sequential([
+    model_Inceptionv3 = Sequential([
      modelo_base,
      Flatten(),
-     Dropout(0.5),
-     Dense(128, activation='relu'),
      Dense(1, activation='sigmoid')
     ])
-    return model_RESNET50
+    return model_Inceptionv3
 #--------------------------------------------------------------------------------
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
@@ -107,8 +105,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/RESNET50_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/RESNET50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -125,17 +123,18 @@ max_train_accuracy=[]
 min_val_accuracy=[]
 max_val_accuracy=[]
 modelos=[]
-# Entrenar y validar el modelo utilizando validación cruzada
-train_images = np.array(train_images)
-train_labels = np.array(train_labels)
+# Crear el modelo base y guardar los pesos iniciales
+model = create_model()
+initial_weights = model.get_weights()
+
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
    
     print(f'Inicia Fold {fold + 1}:\n')
-    
+    # Reiniciar los pesos del modelo a los iniciales
+    model.set_weights(initial_weights)
     #Estructura del modelo
-    model = create_model()
     model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
@@ -201,15 +200,12 @@ etiquetas_verdaderas = []
 for imagenes, etiquetas in test_data:
         etiquetas_verdaderas.extend(etiquetas.numpy())
 print(etiquetas_verdaderas)
-#test_data_np = np.array([x for x, _ in test_data])
+
 for i, model in enumerate(modelos):
-    #print(f"Evaluando modelo {i+1}:")
     
     # Obtener las predicciones del modelo en el conjunto de prueba
     test_loss, test_acc = model.evaluate(test_data)
     
-    #print(f"Perdida en el conjunto de prueba: {test_loss}")
-    #print(f"Precision en el conjunto de prueba: {test_acc}")
     results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc})
     resultados.append(test_acc)
 

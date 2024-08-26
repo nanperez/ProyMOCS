@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.resnet50 import ResNet50
+from keras.applications.vgg16 import VGG16
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -23,10 +23,10 @@ from sklearn.model_selection import KFold
 img_height, img_width = 224,224
 
 def create_modelo_base():
-     modelo_base=ResNet50( include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
+     modelo_base=VGG16( include_top=False,
+    weights="imagenet", #pesos preentrenados
+    input_shape=(img_height, img_width, 3), # tamaño de las imagenes de entrada
+    pooling='avg', 
     classes=2)
      modelo_base.trainable = False
      return modelo_base
@@ -34,14 +34,12 @@ def create_modelo_base():
 
 def create_model():
     modelo_base=create_modelo_base()
-    model_RESNET50 = Sequential([
+    model_VGG16 = Sequential([
      modelo_base,
      Flatten(),
-     Dropout(0.5),
-     Dense(128, activation='relu'),
      Dense(1, activation='sigmoid')
     ])
-    return model_RESNET50
+    return model_VGG16
 #--------------------------------------------------------------------------------
 #Ruta de los datos
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
@@ -107,8 +105,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/RESNET50_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/RESNET50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/VGG16_history_{rate}_{batch_size}_{epochs}_c.txt'
+ruta2= f'/home/mocs/src/VGG16_resumen_{rate}_{batch_size}_{epochs}_c.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -126,8 +124,9 @@ min_val_accuracy=[]
 max_val_accuracy=[]
 modelos=[]
 # Entrenar y validar el modelo utilizando validación cruzada
-train_images = np.array(train_images)
-train_labels = np.array(train_labels)
+# Crear el modelo base y guardar los pesos iniciales
+model = create_model()
+initial_weights = model.get_weights()
 inicio= time.time()
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
@@ -135,7 +134,7 @@ with open(ruta1, 'w') as f:
     print(f'Inicia Fold {fold + 1}:\n')
     
     #Estructura del modelo
-    model = create_model()
+    model.set_weights(initial_weights)
     model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
