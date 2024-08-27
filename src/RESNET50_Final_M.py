@@ -24,16 +24,16 @@ img_height, img_width = 224,224
 
 def create_modelo_base():
      modelo_base=ResNet50( include_top=False,
-    weights="imagenet",
-    input_shape=(img_height, img_width, 3),
-    pooling='avg',
-    classes=2)
-     modelo_base.trainable = False
+     weights="imagenet",
+     input_shape=(img_height, img_width, 3),
+     pooling='avg',
+     classes=2)
      return modelo_base
 #--------------------------------------------------------------------------------
 
 def create_model():
     modelo_base=create_modelo_base()
+    modelo_base.trainable = False
     model_RESNET50 = Sequential([
      modelo_base,
      Flatten(),
@@ -228,7 +228,7 @@ for i, model in enumerate(modelos):
     matrices_confusion.append(conf_matrix)
 
 predicciones_acumuladas /= len(modelos)
-predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
+predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 print("Tiempo de entrenamiento:",tiempo)

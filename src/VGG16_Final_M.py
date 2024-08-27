@@ -24,16 +24,17 @@ img_height, img_width = 224,224
 
 def create_modelo_base():
      modelo_base=VGG16( include_top=False,
-    weights="imagenet", #pesos preentrenados
-    input_shape=(img_height, img_width, 3), # tamaño de las imagenes de entrada
-    pooling='avg', 
-    classes=2)
-     modelo_base.trainable = False
+     weights="imagenet", #pesos preentrenados
+     input_shape=(img_height, img_width, 3), # tamaño de las imagenes de entrada
+     pooling='avg', 
+     classes=2)
+    
      return modelo_base
 #--------------------------------------------------------------------------------
 
 def create_model():
     modelo_base=create_modelo_base()
+    modelo_base.trainable = False
     model_VGG16 = Sequential([
      modelo_base,
      Flatten(),
@@ -105,8 +106,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/VGG16_history_{rate}_{batch_size}_{epochs}_Mc.txt'
-ruta2= f'/home/mocs/src/VGG16_resumen_{rate}_{batch_size}_{epochs}_Mc.txt'
+ruta1 = f'/home/mocs/src/VGG16_history_{rate}_{batch_size}_{epochs}_Moc.txt'
+ruta2= f'/home/mocs/src/VGG16_resumen_{rate}_{batch_size}_{epochs}_Moc.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -230,8 +231,8 @@ for i, model in enumerate(modelos):
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
 
-predicciones_acumuladas /= len(modelos)
-predicted_classes_final = np.argmax(predicciones_acumuladas, axis=1)
+predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
+final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 print("Tiempo de entrenamiento:",tiempo)
