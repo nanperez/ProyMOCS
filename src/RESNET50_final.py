@@ -47,7 +47,7 @@ def create_model():
 data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #--------------------------------------------------------------------------------
 #Parámetros
-rate = 0.001
+rate = 0.01
 batch_size = 16
 epochs = 300
 
