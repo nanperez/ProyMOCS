@@ -5,7 +5,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten, Dropout
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.resnet50 import ResNet50
+from keras.applications.inception_v3 import InceptionV3
 import time
 import numpy as np
 from sklearn.metrics import confusion_matrix
@@ -13,7 +13,7 @@ import pandas as pd
 import seaborn as sn
 from tensorflow.keras.optimizers import Adagrad
 from tensorflow.keras.losses import BinaryCrossentropy
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 from sklearn.model_selection import KFold
@@ -62,7 +62,8 @@ datagen = ImageDataGenerator(
     zoom_range=0.3,
     horizontal_flip=True,
     vertical_flip=True,
-    fill_mode='nearest'
+    fill_mode='nearest',
+    preprocessing_function=tf.keras.applications.resnet50.preprocess_input
 )
 #--------------------------------------------------------------------------------
 
@@ -105,8 +106,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/RESNET50_history_{rate}_{batch_size}_{epochs}_c.txt'
-ruta2= f'/home/mocs/src/RESNET50_resumen_{rate}_{batch_size}_{epochs}_c.txt'
+ruta1 = f'/home/mocs/src/RESNET50_history_{rate}_{batch_size}_{epochs}_Moc.txt'
+ruta2= f'/home/mocs/src/RESNET50_resumen_{rate}_{batch_size}_{epochs}_Moc.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):

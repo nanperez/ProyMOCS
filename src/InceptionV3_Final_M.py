@@ -2,18 +2,18 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Dense, Flatten, Dropout
+from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization
 import matplotlib.pyplot as plt
 import pathlib
 from keras.applications.inception_v3 import InceptionV3
 import time
 import numpy as np
-from sklearn.metrics import confusion_matrix
+from sklearn.metrics import confusion_matrix, roc_auc_score
 import pandas as pd
 import seaborn as sn
 from tensorflow.keras.optimizers import Adagrad
 from tensorflow.keras.losses import BinaryCrossentropy
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import StratifiedKFold, train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import os
 from sklearn.model_selection import KFold
@@ -36,9 +36,14 @@ def create_model():
     modelo_base=create_modelo_base()
     modelo_base.trainable = False
     model_Inceptionv3 = Sequential([
-     modelo_base,
-     Flatten(),
-     Dense(1, activation='sigmoid')
+        modelo_base,
+        Flatten(),
+        Dropout(0.5),
+        Dense(128, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+        BatchNormalization(),
+        Dense(64, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+        BatchNormalization(),
+        Dense(1, activation='sigmoid')
     ])
     return model_Inceptionv3
 #--------------------------------------------------------------------------------
@@ -48,7 +53,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #Parámetros
 rate = 0.001
 batch_size = 16
-epochs = 1000
+epochs = 350
 
 #--------------------------------------------------------------------------------
 
@@ -63,7 +68,8 @@ datagen = ImageDataGenerator(
     zoom_range=0.3,
     horizontal_flip=True,
     vertical_flip=True,
-    fill_mode='nearest'
+    fill_mode='nearest',
+    preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
 )
 #--------------------------------------------------------------------------------
 
@@ -106,8 +112,8 @@ print(f"Prueba: {len(test_labels)}")
 #--------------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------------
-ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_Mc.txt'
-ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_Mc.txt'
+ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_Moc.txt'
+ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_Moc.txt'
 #--------------------------------------------------------------------------------
 directorio = os.path.dirname(ruta1)
 if not os.path.exists(directorio):
@@ -118,7 +124,7 @@ if not os.path.exists(directorio):
 #--------------------------------------------------------------------------------    
 #Incorporación de la validación cruzada
 k = 5
-kf = KFold(n_splits=k, shuffle=True, random_state=42)
+kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=42)
 min_train_accuracy=[]
 max_train_accuracy=[]
 min_val_accuracy=[]
@@ -127,32 +133,35 @@ modelos=[]
 # Crear el modelo base y guardar los pesos iniciales
 model = create_model()
 initial_weights = model.get_weights()
-#Conjunto de entrenamiento como array
-train_images = np.array(train_images)
-train_labels = np.array(train_labels)
+
 inicio= time.time()
 with open(ruta1, 'w') as f:
-  for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
+  for fold, (train_index, val_index) in enumerate(kf.split(train_images, train_labels)):
    
     print(f'Inicia Fold {fold + 1}:\n')
     # Reiniciar los pesos del modelo a los iniciales
     model.set_weights(initial_weights)
+    
+    # Cargar los datos para el fold actual
+    train_images_fold, val_images_fold = np.array(train_images)[train_index], np.array(train_images)[val_index]
+    train_labels_fold, val_labels_fold = np.array(train_labels)[train_index], np.array(train_labels)[val_index]
+
+    # Convertir los datos en tensores
+    train_data_fold = tf.data.Dataset.from_tensor_slices((train_images_fold, train_labels_fold))
+    val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold))
+
+  
+
+    # Mezcla los datos en lotes
+    train_data_fold = train_data_fold.shuffle(buffer_size=len(train_images_fold)).batch(batch_size) #Conjunto de entrenamineto
+    val_data_fold = val_data_fold.batch(batch_size) # conjunto de vaidación
+    
+
     #Estructura del modelo
     model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
                       metrics=['accuracy']# metrica de precisión
     )
-
-    # Carga el conjunto train_ imagenes para dividirlo
-    train_images_fold, val_images_fold = train_images[train_index], train_images[val_index]
-    train_labels_fold, val_labels_fold = train_labels[train_index], train_labels[val_index]
-    # Convierte las listas nuevamente en tensores
-    train_data_fold = tf.data.Dataset.from_tensor_slices((train_images_fold, train_labels_fold))
-    val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold))
-
-    # Mezcla los datos en lotes
-    train_data_fold = train_data_fold.shuffle(buffer_size=len(train_images_fold)).batch(batch_size) #Conjunto de entrenamineto
-    val_data_fold = val_data_fold.batch(batch_size) # conjunto de vaidación
 
     # Entrenar el modelo
     history = model.fit(
@@ -192,35 +201,28 @@ mean_train_max_accuracy=np.mean(max_train_accuracy)
 mean_val_min_accuracy=np.mean(min_val_accuracy)
 mean_val_max_accuracy=np.mean(max_val_accuracy)
 #--------------------------------------------------------------------------------
-fin= time.time()
-tiempo=fin-inicio
-#-------------------------------------------------------------------------------
-#Predicción del modelo y matriz de confusión
+fin = time.time()
+tiempo = fin - inicio
+Tiempo=tiempo/3600
+# Predicción del modelo y matriz de confusión
 results = []
-resultados=[]
-matrices_confusion=[]
+resultados = []
+matrices_confusion = []
 etiquetas_verdaderas = []
+
 for imagenes, etiquetas in test_data:
-        etiquetas_verdaderas.extend(etiquetas.numpy())
-print(etiquetas_verdaderas)
+    etiquetas_verdaderas.extend(etiquetas.numpy())
 
 for i, model in enumerate(modelos):
-    
-    # Obtener las predicciones del modelo en el conjunto de prueba
     test_loss, test_acc = model.evaluate(test_data)
-    
-    results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc})
+    predictions = model.predict(test_data)
+    auc_roc = roc_auc_score(etiquetas_verdaderas, predictions)
+    results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc, 'auc_roc': auc_roc})
     resultados.append(test_acc)
 
-
-     #Acumular las predicciones para el promedio
-    predictions = model.predict(test_data)
-    # Convertir las predicciones en clases
-
-    # Acumulación de predicciones
     if i == 0:
         predicciones_acumuladas = np.zeros_like(predictions)
-    
+
     predicciones_acumuladas += predictions
 
     predicted_classes = (predictions > 0.5).astype(int)
@@ -230,22 +232,19 @@ for i, model in enumerate(modelos):
 predicciones_acumuladas /= len(modelos)
 predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
-print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
-print("Tiempo de entrenamiento:",tiempo)
+print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
+print("Tiempo de entrenamiento:", Tiempo)
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
+
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
-    # Escribe lo que necesites en el archivo
     archivo.write(f"Min accuracy train:{min_train_accuracy}\n")
     archivo.write(f"Max accuracy train:{max_train_accuracy}\n")
-    archivo.write(f"Min accuracy val:{min_val_acuracy}\n")
-    archivo.write(f"Max accuracy val:{max_val_accuracy }\n")
-    archivo.write(f"Promedio  min accuracy train:{mean_train_min_accuracy}\n")
+    archivo.write(f"Min accuracy val:{min_val_accuracy}\n")
+    archivo.write(f"Max accuracy val:{max_val_accuracy}\n")
+    archivo.write(f"Promedio min accuracy train:{mean_train_min_accuracy}\n")
     archivo.write(f"Promedio max accuracy train:{mean_train_max_accuracy}\n")
     archivo.write(f"Promedio min accuracy val:{mean_val_min_accuracy}\n")
-    archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
-    archivo.write(f"Perdida, acurracy test por cada k-fold:{results}\n")
-    archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
-    archivo.write(f"Precision promedio final en el conjunto de prueba: {final_accuracy}\n")
-    archivo.write(f"Matriz de confusion final:\n{conf_matrix_final}\n")
-    archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
+    archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy}\n")
+    archivo.write(f"Pérdida, accuracy test por cada k-fold:{results}\n")
+   
