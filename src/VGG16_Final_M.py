@@ -227,7 +227,7 @@ for i, model in enumerate(modelos):
     
     predicciones_acumuladas += predictions
 
-    predicted_classes = np.argmax(predictions, axis=1)
+    predicted_classes = (predictions > 0.5).astype(int)
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
     matrices_confusion.append(conf_matrix)
 
