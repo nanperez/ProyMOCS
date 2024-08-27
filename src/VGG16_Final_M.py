@@ -128,6 +128,9 @@ modelos=[]
 model = create_model()
 initial_weights = model.get_weights()
 inicio= time.time()
+#Conjunto de entrenamiento como array
+train_images = np.array(train_images)
+train_labels = np.array(train_labels)
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(train_images)):
    
