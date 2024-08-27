@@ -238,13 +238,18 @@ conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_fin
 
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
+    # Escribe lo que necesites en el archivo
     archivo.write(f"Min accuracy train:{min_train_accuracy}\n")
     archivo.write(f"Max accuracy train:{max_train_accuracy}\n")
-    archivo.write(f"Min accuracy val:{min_val_accuracy}\n")
-    archivo.write(f"Max accuracy val:{max_val_accuracy}\n")
-    archivo.write(f"Promedio min accuracy train:{mean_train_min_accuracy}\n")
+    archivo.write(f"Min accuracy val:{min_val_acuracy}\n")
+    archivo.write(f"Max accuracy val:{max_val_accuracy }\n")
+    archivo.write(f"Promedio  min accuracy train:{mean_train_min_accuracy}\n")
     archivo.write(f"Promedio max accuracy train:{mean_train_max_accuracy}\n")
     archivo.write(f"Promedio min accuracy val:{mean_val_min_accuracy}\n")
-    archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy}\n")
-    archivo.write(f"Pérdida, accuracy test por cada k-fold:{results}\n")
+    archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
+    archivo.write(f"Perdida, acurracy test por cada k-fold:{results}\n")
+    archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
+    archivo.write(f"Precision promedio final en el conjunto de prueba: {final_accuracy}\n")
+    archivo.write(f"Matriz de confusion final:\n{conf_matrix_final}\n")
+    archivo.write(f"Tiempo de entrenamiento:{tiempo}\n")
    
