@@ -239,7 +239,7 @@ for i, model in enumerate(modelos):
 predicciones_acumuladas /= len(modelos)
 predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
-print(f"Precisión promedio final en el conjunto de prueba: {final_accuracy}")
+print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 print("Tiempo de entrenamiento:", Tiempo)
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
 
