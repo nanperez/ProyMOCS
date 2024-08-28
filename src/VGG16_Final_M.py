@@ -53,7 +53,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #Parámetros
 rate = 0.001
 batch_size = 64
-epochs = 350
+epochs = 1000
 
 #--------------------------------------------------------------------------------
 
