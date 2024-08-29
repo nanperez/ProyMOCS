@@ -2,7 +2,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers, Sequential
 from tensorflow.keras.optimizers import Adam
-from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization
+from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization, GlobalAveragePooling2D
 import matplotlib.pyplot as plt
 import pathlib
 from keras.applications.inception_v3 import InceptionV3
@@ -37,12 +37,13 @@ def create_model():
     modelo_base.trainable = False
     model_Inceptionv3 = Sequential([
         modelo_base,
-        Flatten(),
+        GlobalAveragePooling2D(),
         Dropout(0.5),
-        Dense(128, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+        Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         BatchNormalization(),
-        Dense(64, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+        Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
         BatchNormalization(),
+        Dropout(0.3),
         Dense(1, activation='sigmoid')
     ])
     return model_Inceptionv3
@@ -53,7 +54,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #Parámetros
 rate = 0.001
 batch_size = 16
-epochs = 350
+epochs = 300
 
 #--------------------------------------------------------------------------------
 
@@ -77,7 +78,6 @@ datagen = ImageDataGenerator(
 dataset = datagen.flow_from_directory(
     data_dir,
     target_size=(img_height, img_width),
-    batch_size=batch_size,
     class_mode='binary',
     shuffle=True
 )

@@ -37,12 +37,13 @@ def create_model():
     modelo_base.trainable = False
     model_VGG16 = Sequential([
      modelo_base,
-     Flatten(),
+     GlobalAveragePooling2D(),
      Dropout(0.5),
-     Dense(128, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+     Dense(128, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
      BatchNormalization(),
-     Dense(64, activation='relu', kernel_regularizer=keras.regularizers.l2(0.001)),
+     Dense(64, activation='relu', kernel_regularizer=tf.keras.regularizers.l2(0.001)),
      BatchNormalization(),
+     Dropout(0.3),
      Dense(1, activation='sigmoid')
     ])
     return model_VGG16
@@ -52,8 +53,8 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 #--------------------------------------------------------------------------------
 #Parámetros
 rate = 0.001
-batch_size = 64
-epochs = 1000
+batch_size = 16
+epochs = 300
 
 #--------------------------------------------------------------------------------
 
