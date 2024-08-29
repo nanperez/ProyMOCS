@@ -62,6 +62,12 @@ datagen = ImageDataGenerator(
     preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
 )
 
+## Reescalado y preprocesamiento para validación y prueba
+#datagen_val_test = ImageDataGenerator(
+ #   rescale=1./255,
+ #   preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+#)
+
 #Crear archivos para almacenar informacion
 ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_Final.txt'
 ruta2= f'/home/mocs/src/InceptionV3_resumen_{rate}_{batch_size}_{epochs}_Final.txt'
@@ -128,6 +134,8 @@ images_train, images_test, labels_train, labels_test = train_test_split(
 #Convertir el conjunto de prueba en tensor
 test_data = tf.data.Dataset.from_tensor_slices((images_test, labels_test))
 test_data = test_data.batch(batch_size)#Mezclar los datos en lotes
+# Crear conjuntos de datos de validación y prueba usando `datagen_val_test`
+#test_data = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
 
 # Verificar la distribución de clases en los conjuntos de entrenamiento y prueba
 print(f"Conjunto de entrenamiento : {len(labels_train)}")
@@ -165,6 +173,9 @@ with open(ruta1, 'w') as f:
      #Opció 2
      #val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold))
      #train_data_fold = train_data_fold.shuffle(buffer_size=len(train_images_fold)).batch(batch_size)
+     ## Convertir el conjunto de validación en tensor y aplicar `datagen_val_test`
+     #val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=False)
+        
 
      #Estructura del modelo
      model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
@@ -212,3 +223,47 @@ time_end = time.time()
 Time = time_end-time_initial 
 Tiempo=Time/3600
 
+#--------------------EVALUACION DEL MODELO-----------------------------
+for imagenes, etiquetas in test_data:
+    etiquetas_verdaderas.extend(etiquetas.numpy())
+
+for i, model in enumerate(modelos):
+    test_loss, test_acc = model.evaluate(test_data)
+    predictions = model.predict(test_data)
+    auc_roc = roc_auc_score(etiquetas_verdaderas, predictions)
+    results.append({'modelo': i+1, 'loss_test': test_loss, 'accuracy_test': test_acc, 'auc_roc': auc_roc})
+    resultados.append(test_acc)
+
+    if i == 0:
+        predicciones_acumuladas = np.zeros_like(predictions)
+
+    predicciones_acumuladas += predictions
+
+    predicted_classes = (predictions > 0.5).astype(int)
+    conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
+    matrices_confusion.append(conf_matrix)
+
+predicciones_acumuladas /= len(modelos)
+predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
+final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
+print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
+print("Tiempo de entrenamiento:", Tiempo)
+conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
+
+# Almacenar valores del entrenamiento
+with open(ruta2, 'w') as archivo:
+    # Escribe lo que necesites en el archivo
+    archivo.write(f"Min accuracy train:{min_train_accuracy}\n")
+    archivo.write(f"Max accuracy train:{max_train_accuracy}\n")
+    archivo.write(f"Min accuracy val:{min_val_acuracy}\n")
+    archivo.write(f"Max accuracy val:{max_val_accuracy }\n")
+    archivo.write(f"Promedio  min accuracy train:{mean_train_min_accuracy}\n")
+    archivo.write(f"Promedio max accuracy train:{mean_train_max_accuracy}\n")
+    archivo.write(f"Promedio min accuracy val:{mean_val_min_accuracy}\n")
+    archivo.write(f"Promedio max accuracy val:{mean_val_max_accuracy }\n")
+    archivo.write(f"Perdida, acurracy test por cada k-fold:{results}\n")
+    archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
+    archivo.write(f"Precision promedio final en el conjunto de prueba: {final_accuracy}\n")
+    archivo.write(f"Matriz de confusion final:\n{conf_matrix_final}\n")
+    archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
+   
