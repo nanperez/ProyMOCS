@@ -114,12 +114,12 @@ for image_batch, label_batch in dataset_total:
 images = np.array(images)
 labels = np.array(labels)
 # Verificar la longitud de las listas
-print("Número de imágenes:", len(images))
-print("Número de etiquetas:", len(labels))
+print("Numero de imagenes:", len(images))
+print("Numero de etiquetas:", len(labels))
 print(labels)
 # Contar las etiquetas
 label_counts = Counter(labels)
-print(f"Distribución de clases: {label_counts}")
+print(f"Distribucion de clases: {label_counts}")
 
 # Dividir el conjunto de datos en entrenamiento y prueba (90-10) de manera estratificada
 images_train, images_test, labels_train, labels_test = train_test_split(
@@ -130,9 +130,9 @@ test_data = tf.data.Dataset.from_tensor_slices((images_test, labels_test))
 test_data = test_data.batch(batch_size)#Mezclar los datos en lotes
 
 # Verificar la distribución de clases en los conjuntos de entrenamiento y prueba
-print(f"Conunto de entrenamiento : {len(labels_train)}")
+print(f"Conjunto de entrenamiento : {len(labels_train)}")
 print(f"Prueba: {len(labels_test)}")
-print("Clases en el conjuntode entrenamiento:")
+print("Clases en el conjunto de entrenamiento:")
 print(Counter(labels_train))
 print("Clases en el conjunto  de prueba:")
 print(Counter(labels_test))
@@ -153,10 +153,10 @@ with open(ruta1, 'w') as f:
      # Dividir el conjunto de datos train total para cada fold en train y val
      train_images_fold, val_images_fold = np.array(images_train)[train_index], np.array(images_train)[val_index]
      train_labels_fold, val_labels_fold = np.array(labels_train)[train_index], np.array(labels_train)[val_index]
-     print("Distribución de clases en el conjunto de entrenamiento:")
+     print("Distribucion de clases en el conjunto de entrenamiento:")
      print(Counter(train_labels_fold))
     
-     print("\nDistribución de clases en el conjunto de validación:")
+     print("\nDistribucion de clases en el conjunto de validacion:")
      print(Counter(val_labels_fold))
       # Aplica el aumento de datos únicamente al conjunto de entrenamiento
      train_fold_generator=datagen.flow(train_images_fold,train_labels_fold, batch_size=batch_size, shuffle=True) 
