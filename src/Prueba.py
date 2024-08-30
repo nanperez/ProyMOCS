@@ -96,7 +96,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 dataset_total = image_dataset_from_directory(
     data_dir,
     image_size=(img_height, img_width),
-    #batch_size=None, # Se dividen en lote 
+    #batch_size=batch_size, # Se dividen en lote 
     label_mode='binary', # las etiquetas con 0 y 1
     shuffle=False #No se mezclan los datos 
 )
