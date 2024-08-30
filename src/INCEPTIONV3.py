@@ -259,7 +259,7 @@ for i in range(2): #Inician las ejecuciones
 
        
     test_mean=np.mean(resultados1)
-    predicciones_acumuladas /= len(k)
+    predicciones_acumuladas /= k
     predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
     final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
     print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_mean}")
