@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 1000 # epocas para el entrenamiento
+epochs = 50 # epocas para el entrenamiento
 
 #Funcion del modelo base 
 def create_modelo_base():
@@ -98,7 +98,7 @@ dataset_total = image_dataset_from_directory(
     image_size=(img_height, img_width),
     batch_size=batch_size, # Se dividen en lote 
     label_mode='binary', # las etiquetas con 0 y 1
-    shuffle=False #No se mezclan los datos 
+    shuffle=True #No se mezclan los datos 
 )
 
 # Obtener la lista de nombres de clase
@@ -132,10 +132,10 @@ images_train, images_test, labels_train, labels_test = train_test_split(
     images, labels, test_size=0.1, stratify=labels, random_state=42  # Ajusta random_state si deseas
 )
 #Convertir el conjunto de prueba en tensor
-test_data = tf.data.Dataset.from_tensor_slices((images_test, labels_test))
-test_data = test_data.batch(batch_size)#Mezclar los datos en lotes
+#test_data = tf.data.Dataset.from_tensor_slices((images_test, labels_test))
+#test_data = test_data.batch(batch_size)#Mezclar los datos en lotes
 # Crear conjuntos de datos de validación y prueba usando `datagen_val_test`
-#test_data = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
+test_data = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
 
 # Verificar la distribución de clases en los conjuntos de entrenamiento y prueba
 print(f"Conjunto de entrenamiento : {len(labels_train)}")
