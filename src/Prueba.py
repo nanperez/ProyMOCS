@@ -197,7 +197,7 @@ with open(ruta1, 'w') as f:
      
      test_loss, test_acc = model.evaluate(test_data)
      predictions = model.predict(test_data)
-     #print(predictions)
+     print(test_acc)
 
      modelos.append(model)
      
@@ -235,9 +235,9 @@ Tiempo=Time/3600
 #--------------------EVALUACION DEL MODELO-----------------------------
 #for imagenes, etiquetas in test_data:
  #   etiquetas_verdaderas.extend(etiquetas.numpy())
-for i in range(len(test_data)):
-    images, etiquetas = test_data[i]  # Extraer las imágenes y etiquetas del batch
-    etiquetas_verdaderas.extend(etiquetas) 
+#for i in range(len(test_data)):
+#    images, etiquetas = test_data[i]  # Extraer las imágenes y etiquetas del batch
+#    etiquetas_verdaderas.extend(etiquetas) 
 
 
 for i, model in enumerate(modelos):
