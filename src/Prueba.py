@@ -59,14 +59,14 @@ datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True,
     fill_mode='nearest',
-    preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+    #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
 )
 
 ## Reescalado y preprocesamiento para validación y prueba
-#datagen_val_test = ImageDataGenerator(
- #   rescale=1./255,
- #   preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
-#)
+datagen_val_test = ImageDataGenerator(
+    rescale=1./255,
+  #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+)
 
 #Crear archivos para almacenar informacion
 ruta1 = f'/home/mocs/src/InceptionV3_history_{rate}_{batch_size}_{epochs}_Final.txt'
@@ -96,7 +96,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 dataset_total = image_dataset_from_directory(
     data_dir,
     image_size=(img_height, img_width),
-    #batch_size=batch_size, # Se dividen en lote 
+    batch_size=batch_size, # Se dividen en lote 
     label_mode='binary', # las etiquetas con 0 y 1
     shuffle=False #No se mezclan los datos 
 )
@@ -169,12 +169,12 @@ with open(ruta1, 'w') as f:
       # Aplica el aumento de datos únicamente al conjunto de entrenamiento
      train_fold_generator=datagen.flow(train_images_fold,train_labels_fold, batch_size=batch_size, shuffle=True) 
      # Convertir el conjunto de validacion en tensor en tensores
-     val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold)).batch(batch_size)
+     #val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold)).batch(batch_size)
      #Opció 2
      #val_data_fold = tf.data.Dataset.from_tensor_slices((val_images_fold, val_labels_fold))
      #train_data_fold = train_data_fold.shuffle(buffer_size=len(train_images_fold)).batch(batch_size)
      ## Convertir el conjunto de validación en tensor y aplicar `datagen_val_test`
-     #val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=False)
+     val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=False)
         
      
      #Estructura del modelo
