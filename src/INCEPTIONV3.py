@@ -87,7 +87,7 @@ print(f"La clase 0 corresponde a: {class_names[0]}")
 print(f"La clase 1 corresponde a: {class_names[1]}")
 
 #-------------------------------Codigo Base--------------------------------------------------------
-for i in range(5): #Inician las ejecuciones
+for i in range(2): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:")
     #Crear archivos para almacenar informacion
     ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i}_Final.txt'
