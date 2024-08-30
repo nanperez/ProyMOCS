@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 50 # epocas para el entrenamiento
+epochs = 5 # epocas para el entrenamiento
 
 #Funcion del modelo base 
 def create_modelo_base():
@@ -224,8 +224,12 @@ Time = time_end-time_initial
 Tiempo=Time/3600
 
 #--------------------EVALUACION DEL MODELO-----------------------------
-for imagenes, etiquetas in test_data:
-    etiquetas_verdaderas.extend(etiquetas.numpy())
+#for imagenes, etiquetas in test_data:
+ #   etiquetas_verdaderas.extend(etiquetas.numpy())
+for i in range(len(test_data)):
+    images, etiquetas = test_data[i]  # Extraer las imágenes y etiquetas del batch
+    etiquetas_verdaderas.extend(etiquetas) 
+
 
 for i, model in enumerate(modelos):
     test_loss, test_acc = model.evaluate(test_data)
