@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 2 # epocas para el entrenamiento
+epochs = 200 # epocas para el entrenamiento
 
 #Funcion del modelo base 
 def create_modelo_base():
