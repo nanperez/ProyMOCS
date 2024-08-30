@@ -241,14 +241,16 @@ for i, model in enumerate(modelos):
 
     predicted_classes = (predictions > 0.5).astype(int)
     conf_matrix = confusion_matrix(etiquetas_verdaderas, predicted_classes)
+    print(conf_matrix)
     matrices_confusion.append(conf_matrix)
-
+test_mean=np.mean(resultados)
 predicciones_acumuladas /= len(modelos)
 predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
 final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
 print(f"Precision promedio final en el conjunto de prueba: {final_accuracy}")
 print("Tiempo de entrenamiento:", Tiempo)
 conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
+print(conf_matrix_final)
 
 # Almacenar valores del entrenamiento
 with open(ruta2, 'w') as archivo:
@@ -264,6 +266,7 @@ with open(ruta2, 'w') as archivo:
     archivo.write(f"Perdida, acurracy test por cada k-fold:{results}\n")
     archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
     archivo.write(f"Precision promedio final en el conjunto de prueba: {final_accuracy}\n")
+    archivo.write(f"Promedio de la precision en el conjunto de prueba: {test_mean}\n")
     archivo.write(f"Matriz de confusion final:\n{conf_matrix_final}\n")
     archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
    
