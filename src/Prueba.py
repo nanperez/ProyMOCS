@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 300 # epocas para el entrenamiento
+epochs = 3 # epocas para el entrenamiento
 
 #Funcion del modelo base 
 def create_modelo_base():
@@ -36,6 +36,7 @@ def create_modelo_base():
      pooling='avg',
      classes=2)
      return modelo_base
+
 #Creacion del modelo de CNN para entrenamiento
 def create_model():
     modelo_base=create_modelo_base()
@@ -62,7 +63,7 @@ datagen = ImageDataGenerator(
     #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
 )
 
-## Reescalado y preprocesamiento para validación y prueba
+## Reescalado para validación y prueba
 datagen_val_test = ImageDataGenerator(
     rescale=1./255,
   #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
@@ -153,6 +154,10 @@ time_initial= time.time()
 #Validación cruzada
 k = 5
 kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=42)
+for i in range(len(test_data)):
+    images, etiquetas = test_data[i]  # Extraer las imágenes y etiquetas del batch
+    etiquetas_verdaderas.extend(etiquetas) 
+
 with open(ruta1, 'w') as f:
   for fold, (train_index, val_index) in enumerate(kf.split(images_train, labels_train)):
      print(f'Inicia Fold {fold + 1}:\n')
@@ -190,6 +195,10 @@ with open(ruta1, 'w') as f:
         validation_data=val_data_fold, shuffle=True
      )
      
+     test_loss, test_acc = model.evaluate(test_data)
+     predictions = model.predict(test_data)
+     print(predictions)
+
      modelos.append(model)
      
      f.write(f'Fold {fold + 1}:\n')
