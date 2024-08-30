@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 3 # epocas para el entrenamiento
+epochs = 2 # epocas para el entrenamiento
 
 #Funcion del modelo base 
 def create_modelo_base():
@@ -197,7 +197,7 @@ with open(ruta1, 'w') as f:
      
      test_loss, test_acc = model.evaluate(test_data)
      predictions = model.predict(test_data)
-     print(test_acc)
+     print(f"La precision por fold es  {test_acc}")
 
      modelos.append(model)
      
