@@ -176,8 +176,7 @@ with open(ruta1, 'w') as f:
      ## Convertir el conjunto de validación en tensor y aplicar `datagen_val_test`
      #val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=False)
         
-     class_counts = train_fold_generator.class_indices
-     print(class_counts)
+     
      #Estructura del modelo
      model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
                       loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
