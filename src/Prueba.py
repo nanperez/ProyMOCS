@@ -197,7 +197,7 @@ with open(ruta1, 'w') as f:
      
      test_loss, test_acc = model.evaluate(test_data)
      predictions = model.predict(test_data)
-     print(predictions)
+     #print(predictions)
 
      modelos.append(model)
      
