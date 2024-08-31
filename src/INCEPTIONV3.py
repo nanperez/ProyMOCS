@@ -87,11 +87,12 @@ print(f"La clase 0 corresponde a: {class_names[0]}")
 print(f"La clase 1 corresponde a: {class_names[1]}")
 
 #-------------------------------Codigo Base--------------------------------------------------------
+Tiempo_ejec=time()
 for i in range(2): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:")
     #Crear archivos para almacenar informacion
-    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i}_Final.txt'
-    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i}_Final.txt'
+    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_Final.txt'
+    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_Final.txt'
     directorio = os.path.dirname(ruta1)
     if not os.path.exists(directorio):
        os.makedirs(directorio)
@@ -294,7 +295,8 @@ for i in range(2): #Inician las ejecuciones
        archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
        archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
-
+Tiempo_end=time()
+print(f"Tiempo total de ejecucion por 10 ejecuciones del código:{(Tiempo_end-Tiempo_ejec)/3600}")
 
 
 
