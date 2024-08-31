@@ -26,8 +26,8 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 2 # epocas para el entrenamiento
-
+epochs = 500 # epocas para el entrenamiento
+ejecucion=5
 #Funcion del modelo base 
 def create_modelo_base():
      modelo_base=InceptionV3(include_top=False,
@@ -88,7 +88,7 @@ print(f"La clase 1 corresponde a: {class_names[1]}")
 
 #-------------------------------Codigo Base--------------------------------------------------------
 Tiempo_ejec=time.time()
-for i in range(2): #Inician las ejecuciones
+for i in range(ejecucion): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:")
     #Crear archivos para almacenar informacion
     ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_Final.txt'
@@ -297,7 +297,7 @@ for i in range(2): #Inician las ejecuciones
        archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
 Tiempo_end=time.time()
-print(f"Tiempo total de ejecucion por 10 ejecuciones del codigo:{(Tiempo_end-Tiempo_ejec)/3600}")
+print(f"Tiempo total de ejecucion por 5 ejecuciones del codigo:{(Tiempo_end-Tiempo_ejec)/3600}")
 
 
 
