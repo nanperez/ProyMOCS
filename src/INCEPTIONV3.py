@@ -264,11 +264,11 @@ for i in range(ejecucion): #Inician las ejecuciones
     Tiempo=(time_end-time_initial)/3600
 
        
-    test_mean=np.mean(resultados1)
+    test_accuracy_mean=np.mean(resultados2)
     predicciones_acumuladas /= k
     predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
     final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
-    print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_mean}")
+    print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_accuracy_mean}")
     print(f"Precision promedio acumulada en el conjunto de prueba: {final_accuracy}")
     print("Tiempo de entrenamiento:", Tiempo)
     conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
@@ -292,7 +292,7 @@ for i in range(ejecucion): #Inician las ejecuciones
        archivo.write(f"Recall test por cada k-fold:{resultados5}\n")
        archivo.write(f"F1-score test por cada k-fold:{resultados6}\n")
        archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
-       archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_mean}\n")
+       archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_accuracy_mean}\n")
        archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
        archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
