@@ -297,7 +297,7 @@ for i in range(2): #Inician las ejecuciones
        archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
 Tiempo_end=time.time()
-print(f"Tiempo total de ejecucion por 10 ejecuciones del código:{(Tiempo_end-Tiempo_ejec)/3600}")
+print(f"Tiempo total de ejecucion por 10 ejecuciones del codigo:{(Tiempo_end-Tiempo_ejec)/3600}")
 
 
 
