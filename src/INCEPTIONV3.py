@@ -137,10 +137,10 @@ for i in range(2): #Inician las ejecuciones
     )
 
     # Crear conjunto de prueba usando `datagen_val_test
-    test_data = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
+    test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
     #Etiquetas del conjunto de prueba
-    for i in range(len(test_data)):
-       images, etiquetas = test_data[i]  
+    for i in range(len(test_data_generator)):
+       images, etiquetas = test_data_generator[i]  
        etiquetas_verdaderas.extend(etiquetas) 
     # Verificar la distribución de clases en los conjuntos de entrenamiento y prueba
     print(f"Conjunto de entrenamiento : {len(labels_train)}")
@@ -154,6 +154,10 @@ for i in range(2): #Inician las ejecuciones
     #Crear el modelo y almacenar los pesos iniciales
     model = create_model()
     initial_weights = model.get_weights()
+    model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+                      metrics=['accuracy']# metrica de precisión
+    )
     time_initial= time.time()
     #Validación cruzada
     k = 5
@@ -180,10 +184,10 @@ for i in range(2): #Inician las ejecuciones
         
      
           #Estructura del modelo
-          model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
-                      loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
-                      metrics=['accuracy']# metrica de precisión
-          )
+          #model.compile(optimizer=Adam(learning_rate=rate), #se emplea el optimizador Adam con tasa de aprendizaje 0.001
+          #            loss=BinaryCrossentropy(from_logits=False),   # función de pérdida
+          #            metrics=['accuracy']# metrica de precisión
+          #)
      
            # Entrenar el modelo
           history = model.fit(
@@ -193,8 +197,8 @@ for i in range(2): #Inician las ejecuciones
           )
 
           #----------Calculos del test y métricas-------------------
-          test_loss, test_acc = model.evaluate(test_data)
-          predictions = model.predict(test_data)
+          test_loss, test_acc = model.evaluate(test_data_generator)
+          predictions = model.predict(test_data_generator)
           print(f"La precision por fold es  {test_acc}")
           predicted_classes = (predictions > 0.5).astype(int) # convertir de probabilidades a enteros
           auc_roc = roc_auc_score(etiquetas_verdaderas, predicted_classes)
