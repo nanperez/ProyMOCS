@@ -195,9 +195,9 @@ with open(ruta1, 'w') as f:
         validation_data=val_data_fold, shuffle=True
      )
      
-     test_loss, test_acc = model.evaluate(test_data)
-     predictions = model.predict(test_data)
-     print(f"La precision por fold es  {test_acc}")
+     #test_loss, test_acc = model.evaluate(test_data)
+     #predictions = model.predict(test_data)
+     #print(f"La precision por fold es  {test_acc}")
 
      modelos.append(model)
      
