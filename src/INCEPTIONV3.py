@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 250 # epocas para el entrenamiento
+epochs = 4 # epocas para el entrenamiento
 ejecucion=1
 #Funcion del modelo base 
 def create_modelo_base():
@@ -202,6 +202,7 @@ for i in range(ejecucion): #Inician las ejecuciones
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
+          print(predictions)
           print(f"La precision por fold es  {test_acc}")
           predicted_classes = (predictions > 0.5).astype(int) # convertir de probabilidades a enteros
           auc_roc = roc_auc_score(etiquetas_verdaderas, predicted_classes)
@@ -219,13 +220,13 @@ for i in range(ejecucion): #Inician las ejecuciones
 
           #---------Predicciones acumuladas-----------------------
           predicciones_acumuladas += predictions
-       
+          print(predicciones_acumuladas)
          
           #-----Escritura del historial por cada fold  en el archivo txt---------------
-          f.write(f'Fold {fold + 1}:\n')
-          for key in history.history:
-                f.write(f'{key}: {history.history[key]}\n')
-                f.write('\n')
+          #f.write(f'Fold {fold + 1}:\n')
+          #for key in history.history:
+          #      f.write(f'{key}: {history.history[key]}\n')
+          #      f.write('\n')
           #-----------------Guardar valores de la última época--------------
           final_epoch = epochs - 1
 
@@ -267,7 +268,10 @@ for i in range(ejecucion): #Inician las ejecuciones
        
     test_accuracy_mean=np.mean(resultados2)
     predicciones_acumuladas /= k
+    print(predicciones_acumuladas)
     predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
+    print(etiquetas_verdaderas)
+    print(predicted_classes_final)
     final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
     print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_accuracy_mean}")
     print(f"Precision promedio acumulada en el conjunto de prueba: {final_accuracy}")
@@ -275,27 +279,27 @@ for i in range(ejecucion): #Inician las ejecuciones
     conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
 
     # Almacenar valores del entrenamiento
-    with open(ruta2, 'w') as archivo:
+    #with open(ruta2, 'w') as archivo:
        # Escribe lo que necesites en el archivo
-       archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
-       archivo.write(f"Min accuracy train por fold:{min_train_accuracy}\n")
-       archivo.write(f"Max accuracy train por fold:{max_train_accuracy}\n")
-       archivo.write(f"Min accuracy val por fold:{min_val_acuracy}\n")
-       archivo.write(f"Max accuracy val por fold:{max_val_accuracy }\n")
-       archivo.write(f"Accuracy train ultima epoca:{train_accuracy_final}\n")
-       archivo.write(f"Loss tran ultima epoca por fold:{train_loss_final}\n")
-       archivo.write(f"Accuracy val ultima por fold:{val_accuracy_final}\n")
-       archivo.write(f"Loss val ultima epoca por fold :{val_loss_final}\n")
-       archivo.write(f"Loss test por cada fold:{resultados1}\n")
-       archivo.write(f"Accuracy test por cada fold:{resultados2}\n")
-       archivo.write(f"AUc-ROC test por cada k-fold:{resultados3}\n")
-       archivo.write(f"Precision test por cada k-fold:{resultados4}\n")
-       archivo.write(f"Recall test por cada k-fold:{resultados5}\n")
-       archivo.write(f"F1-score test por cada k-fold:{resultados6}\n")
-       archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
-       archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_accuracy_mean}\n")
-       archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
-       archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
+     #  archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
+     #  archivo.write(f"Min accuracy train por fold:{min_train_accuracy}\n")
+     #  archivo.write(f"Max accuracy train por fold:{max_train_accuracy}\n")
+     #  archivo.write(f"Min accuracy val por fold:{min_val_acuracy}\n")
+     #  archivo.write(f"Max accuracy val por fold:{max_val_accuracy }\n")
+     #  archivo.write(f"Accuracy train ultima epoca:{train_accuracy_final}\n")
+     #  archivo.write(f"Loss tran ultima epoca por fold:{train_loss_final}\n")
+     #  archivo.write(f"Accuracy val ultima por fold:{val_accuracy_final}\n")
+     #  archivo.write(f"Loss val ultima epoca por fold :{val_loss_final}\n")
+     #  archivo.write(f"Loss test por cada fold:{resultados1}\n")
+     #  archivo.write(f"Accuracy test por cada fold:{resultados2}\n")
+     #  archivo.write(f"AUc-ROC test por cada k-fold:{resultados3}\n")
+     #  archivo.write(f"Precision test por cada k-fold:{resultados4}\n")
+     #  archivo.write(f"Recall test por cada k-fold:{resultados5}\n")
+     #  archivo.write(f"F1-score test por cada k-fold:{resultados6}\n")
+     #  archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
+      # archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_accuracy_mean}\n")
+      # archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
+      # archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
 Tiempo_end=time.time()
 print(f"Tiempo total de ejecucion por 5 ejecuciones del codigo:{(Tiempo_end-Tiempo_ejec)/3600}")
