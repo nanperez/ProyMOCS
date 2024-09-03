@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 4 # epocas para el entrenamiento
+epochs = 2 # epocas para el entrenamiento
 ejecucion=1
 #Funcion del modelo base 
 def create_modelo_base():
@@ -202,7 +202,7 @@ for i in range(ejecucion): #Inician las ejecuciones
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
-          print(predictions)
+          print(f"prediccion del modelo por fold:{np.array( predictions)}")
           print(f"La precision por fold es  {test_acc}")
           predicted_classes = (predictions > 0.5).astype(int) # convertir de probabilidades a enteros
           auc_roc = roc_auc_score(etiquetas_verdaderas, predicted_classes)
@@ -220,7 +220,7 @@ for i in range(ejecucion): #Inician las ejecuciones
 
           #---------Predicciones acumuladas-----------------------
           predicciones_acumuladas += predictions
-          print(predicciones_acumuladas)
+          print(f"prediccion acumulada: {np.array(predicciones_acumuladas)}")
          
           #-----Escritura del historial por cada fold  en el archivo txt---------------
           #f.write(f'Fold {fold + 1}:\n')
@@ -268,10 +268,10 @@ for i in range(ejecucion): #Inician las ejecuciones
        
     test_accuracy_mean=np.mean(resultados2)
     predicciones_acumuladas /= k
-    print(predicciones_acumuladas)
+    print(f"arreglo de la prediccion final acumulada{np.array(predicciones_acumuladas)}")
     predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
-    print(etiquetas_verdaderas)
-    print(predicted_classes_final)
+    print(f"etiquetas verderas{np.array(etiquetas_verdaderas)}")
+    print(f"prediccion clases finales {np.array(predicted_classes_final)}")
     final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
     print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_accuracy_mean}")
     print(f"Precision promedio acumulada en el conjunto de prueba: {final_accuracy}")
