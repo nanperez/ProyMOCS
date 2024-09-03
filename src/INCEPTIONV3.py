@@ -139,7 +139,7 @@ for i in range(ejecucion): #Inician las ejecuciones
     )
 
     # Crear conjunto de prueba usando `datagen_val_test
-    test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=False)
+    test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=True)
     #Etiquetas del conjunto de prueba
     for i in range(len(test_data_generator)):
        images, etiquetas = test_data_generator[i]  
@@ -182,7 +182,7 @@ for i in range(ejecucion): #Inician las ejecuciones
           train_fold_generator=datagen.flow(train_images_fold,train_labels_fold, batch_size=batch_size, shuffle=True) 
      
           ## Convertir el conjunto de validación en tensor y aplicar `datagen_val_test`
-          val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=False)
+          val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=True)
         
      
           #Estructura del modelo
