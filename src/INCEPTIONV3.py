@@ -202,7 +202,6 @@ for i in range(ejecucion): #Inician las ejecuciones
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
-          print(f"prediccion del modelo por fold:{np.array( predictions)}")
           print(f"La precision por fold es  {test_acc}")
           predicted_classes = (predictions > 0.5).astype(int) # convertir de probabilidades a enteros
           auc_roc = roc_auc_score(etiquetas_verdaderas, predicted_classes)
@@ -220,13 +219,13 @@ for i in range(ejecucion): #Inician las ejecuciones
 
           #---------Predicciones acumuladas-----------------------
           predicciones_acumuladas += predictions
-          print(f"prediccion acumulada: {np.array(predicciones_acumuladas)}")
+         
          
           #-----Escritura del historial por cada fold  en el archivo txt---------------
-          #f.write(f'Fold {fold + 1}:\n')
-          #for key in history.history:
-          #      f.write(f'{key}: {history.history[key]}\n')
-          #      f.write('\n')
+          f.write(f'Fold {fold + 1}:\n')
+          for key in history.history:
+                f.write(f'{key}: {history.history[key]}\n')
+                f.write('\n')
           #-----------------Guardar valores de la última época--------------
           final_epoch = epochs - 1
 
@@ -268,14 +267,11 @@ for i in range(ejecucion): #Inician las ejecuciones
        
     test_accuracy_mean=np.mean(resultados2)
     predicciones_acumuladas /= k
-    print(f"arreglo de la prediccion final acumulada{np.array(predicciones_acumuladas)}")
-    predicted_classes_final = (predicciones_acumuladas > 0.5).astype(int)
-    p=np.array(predicted_classes_final)
-    p1=predicted_classes_final.flatten()
+    predicted_classes_final =np.array((predicciones_acumuladas > 0.5).astype(int))
+    predicted_c_final=predicted_classes_final.flatten()
     print(f"etiquetas verderas{np.array(etiquetas_verdaderas)}")
-    print(f"prediccion clases finales {p1}")
-    #final_accuracy = np.mean(predicted_classes_final == np.array(etiquetas_verdaderas))
-    final_accuracy = (p1 == np.array(etiquetas_verdaderas))
+    print(f"prediccion clases finales {predicted_c_final}")
+    final_accuracy = np.mean(predicted_c_final == np.array(etiquetas_verdaderas))
     print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_accuracy_mean}")
     print(f"Precision promedio acumulada en el conjunto de prueba: {final_accuracy}")
     print("Tiempo de entrenamiento:", Tiempo)
