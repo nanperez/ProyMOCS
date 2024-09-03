@@ -26,8 +26,8 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 2 # epocas para el entrenamiento
-ejecucion=1
+epochs = 300 # epocas para el entrenamiento
+ejecucion=10
 #Funcion del modelo base 
 def create_modelo_base():
      modelo_base=InceptionV3(include_top=False,
@@ -92,8 +92,8 @@ Tiempo_ejec=time.time()
 for i in range(ejecucion): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:")
     #Crear archivos para almacenar informacion
-    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_Final.txt'
-    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_Final.txt'
+    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_E.txt'
+    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_E.txt'
     directorio = os.path.dirname(ruta1)
     if not os.path.exists(directorio):
        os.makedirs(directorio)
@@ -278,27 +278,27 @@ for i in range(ejecucion): #Inician las ejecuciones
     conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
 
     # Almacenar valores del entrenamiento
-    #with open(ruta2, 'w') as archivo:
+    with open(ruta2, 'w') as archivo:
        # Escribe lo que necesites en el archivo
-     #  archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
-     #  archivo.write(f"Min accuracy train por fold:{min_train_accuracy}\n")
-     #  archivo.write(f"Max accuracy train por fold:{max_train_accuracy}\n")
-     #  archivo.write(f"Min accuracy val por fold:{min_val_acuracy}\n")
-     #  archivo.write(f"Max accuracy val por fold:{max_val_accuracy }\n")
-     #  archivo.write(f"Accuracy train ultima epoca:{train_accuracy_final}\n")
-     #  archivo.write(f"Loss tran ultima epoca por fold:{train_loss_final}\n")
-     #  archivo.write(f"Accuracy val ultima por fold:{val_accuracy_final}\n")
-     #  archivo.write(f"Loss val ultima epoca por fold :{val_loss_final}\n")
-     #  archivo.write(f"Loss test por cada fold:{resultados1}\n")
-     #  archivo.write(f"Accuracy test por cada fold:{resultados2}\n")
-     #  archivo.write(f"AUc-ROC test por cada k-fold:{resultados3}\n")
-     #  archivo.write(f"Precision test por cada k-fold:{resultados4}\n")
-     #  archivo.write(f"Recall test por cada k-fold:{resultados5}\n")
-     #  archivo.write(f"F1-score test por cada k-fold:{resultados6}\n")
-     #  archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
-      # archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_accuracy_mean}\n")
-      # archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
-      # archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
+       archivo.write(f"Tiempo de entrenamiento:{Tiempo}\n")
+       archivo.write(f"Min accuracy train por fold:{min_train_accuracy}\n")
+       archivo.write(f"Max accuracy train por fold:{max_train_accuracy}\n")
+       archivo.write(f"Min accuracy val por fold:{min_val_acuracy}\n")
+       archivo.write(f"Max accuracy val por fold:{max_val_accuracy }\n")
+       archivo.write(f"Accuracy train ultima epoca:{train_accuracy_final}\n")
+       archivo.write(f"Loss tran ultima epoca por fold:{train_loss_final}\n")
+       archivo.write(f"Accuracy val ultima por fold:{val_accuracy_final}\n")
+       archivo.write(f"Loss val ultima epoca por fold :{val_loss_final}\n")
+       archivo.write(f"Loss test por cada fold:{resultados1}\n")
+       archivo.write(f"Accuracy test por cada fold:{resultados2}\n")
+       archivo.write(f"AUc-ROC test por cada k-fold:{resultados3}\n")
+       archivo.write(f"Precision test por cada k-fold:{resultados4}\n")
+       archivo.write(f"Recall test por cada k-fold:{resultados5}\n")
+       archivo.write(f"F1-score test por cada k-fold:{resultados6}\n")
+       archivo.write(f":Matrices de confusion por k-fold: {matrices_confusion}\n")
+       archivo.write(f"Promedio  de la precision en el conjunto de prueba: {test_accuracy_mean}\n")
+       archivo.write(f"Matriz de confusion acumulada:\n{conf_matrix_final}\n")
+       archivo.write(f"Precision acumulada promedio en el conjunto de prueba: {final_accuracy}\n")
       
 Tiempo_end=time.time()
 print(f"Tiempo total de ejecucion por 5 ejecuciones del codigo:{(Tiempo_end-Tiempo_ejec)/3600}")
