@@ -26,8 +26,8 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 1000 # epocas para el entrenamiento
-ejecucion=1
+epochs = 100 # epocas para el entrenamiento
+ejecucion=10
 #Funcion del modelo base 
 def create_modelo_base():
      modelo_base=InceptionV3(include_top=False,
@@ -50,7 +50,8 @@ def create_model():
 
 #Funcion para generar el aumento de datos 
 datagen = ImageDataGenerator(
-    rescale=1./255,
+    #rescale=1./255,
+    preprocessing_function=tf.keras.applications.inception_v3.preprocess_input,
     rotation_range=55, 
     width_shift_range=0.25,
     height_shift_range=0.25,
@@ -60,13 +61,13 @@ datagen = ImageDataGenerator(
     horizontal_flip=True,
     vertical_flip=True,
     fill_mode='nearest',
-    #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+    
 )
 
 ## Reescalado para validación y prueba
 datagen_val_test = ImageDataGenerator(
-    rescale=1./255,
-  #preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+    #rescale=1./255,
+  preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
 )
 
 #Ruta de los datos 
