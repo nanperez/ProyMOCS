@@ -26,7 +26,7 @@ from collections import Counter
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 32 # tamaño de lote
-epochs = 300 # epocas para el entrenamiento
+epochs = 500 # epocas para el entrenamiento
 ejecucion=10
 #Funcion del modelo base 
 def create_modelo_base():
@@ -275,7 +275,7 @@ for i in range(ejecucion): #Inician las ejecuciones
     print(f"Promedio de la precision en cada fold en el conjunto de prueba:{test_accuracy_mean}")
     print(f"Precision promedio acumulada en el conjunto de prueba: {final_accuracy}")
     print("Tiempo de entrenamiento:", Tiempo)
-    conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_classes_final)
+    conf_matrix_final = confusion_matrix(etiquetas_verdaderas, predicted_c_final)
 
     # Almacenar valores del entrenamiento
     with open(ruta2, 'w') as archivo:
