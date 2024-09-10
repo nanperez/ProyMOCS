@@ -20,6 +20,7 @@ import os
 from sklearn.model_selection import KFold
 from tensorflow.keras.preprocessing import image_dataset_from_directory
 from collections import Counter
+import random
 #----------------------------------------------------------------------------------------
 #-------------------------------------Preámbulo-------------------------------------
 #Parámetros
@@ -78,6 +79,10 @@ Tiempo_ejec=time.time()
 for i in range(ejecucion): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:") 
     print(f"Semilla: {seed[i]}:") 
+     # Establecer semillas para asegurar reproducibilidad
+    np.random.seed(seed[i])
+    tf.random.set_seed(seed[i])
+    random.seed(seed[i])
   # Carga el conjunto de datos de la ruta data dir 
     dataset_total = image_dataset_from_directory(
       data_dir,
@@ -85,7 +90,7 @@ for i in range(ejecucion): #Inician las ejecuciones
       batch_size=batch_size, # Se dividen en lote 
       label_mode='binary', # las etiquetas con 0 y 1
       shuffle=True, #No se mezclan los datos 
-      seed=seed[ejecucion]
+      seed=seed[i]
     )
 
     # Obtener la lista de nombres de clase
@@ -144,7 +149,7 @@ for i in range(ejecucion): #Inician las ejecuciones
     )
 
     # Crear conjunto de prueba usando `datagen_val_test
-    test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=True)
+    test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=True, seed=seed[i])
     #Etiquetas del conjunto de prueba
     for j in range(len(test_data_generator)):
        images, etiquetas = test_data_generator[j]  
@@ -169,7 +174,6 @@ for i in range(ejecucion): #Inician las ejecuciones
     #Validación cruzada
     k = 5
     kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed[i])
-    print(seed[ejecucion])
     predicciones_acumuladas = np.zeros((len(labels_test), 1))
     with open(ruta1, 'w') as f:
        for fold, (train_index, val_index) in enumerate(kf.split(images_train, labels_train)):
@@ -184,10 +188,10 @@ for i in range(ejecucion): #Inician las ejecuciones
           print("\nDistribucion de clases en el conjunto de validacion:")
           print(Counter(val_labels_fold))
           # Aplica el aumento de datos únicamente al conjunto de entrenamiento
-          train_fold_generator=datagen.flow(train_images_fold,train_labels_fold, batch_size=batch_size, shuffle=True) 
+          train_fold_generator=datagen.flow(train_images_fold,train_labels_fold, batch_size=batch_size, shuffle=True, seed=seed[i]) 
      
           ## Convertir el conjunto de validación en tensor y aplicar `datagen_val_test`
-          val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=True)
+          val_data_fold = datagen_val_test.flow(val_images_fold, val_labels_fold, batch_size=batch_size, shuffle=True, seed=seed[i])
         
      
           #Estructura del modelo
