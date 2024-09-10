@@ -169,7 +169,7 @@ for i in range(ejecucion): #Inician las ejecuciones
     #Validación cruzada
     k = 5
     kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed[ejecucion])
-
+    print(seed[ejecucion])
     predicciones_acumuladas = np.zeros((len(labels_test), 1))
     with open(ruta1, 'w') as f:
        for fold, (train_index, val_index) in enumerate(kf.split(images_train, labels_train)):
