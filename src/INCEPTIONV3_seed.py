@@ -77,7 +77,7 @@ data_dir ='/home/mocs/data/DataSet_Pineapple_Part1' # imagenes del conjunto
 Tiempo_ejec=time.time()
 for i in range(ejecucion): #Inician las ejecuciones
     print(f"Ejecucion numero {i+1}:") 
-    print(f"Semilla: {seed[ejecucion]}:") 
+    print(f"Semilla: {seed[i]}:") 
   # Carga el conjunto de datos de la ruta data dir 
     dataset_total = image_dataset_from_directory(
       data_dir,
@@ -97,8 +97,8 @@ for i in range(ejecucion): #Inician las ejecuciones
 
 
     #Crear archivos para almacenar informacion
-    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[ejecucion]}.txt'
-    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[ejecucion]}.txt'
+    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
+    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
     directorio = os.path.dirname(ruta1)
     if not os.path.exists(directorio):
        os.makedirs(directorio)
@@ -140,14 +140,14 @@ for i in range(ejecucion): #Inician las ejecuciones
 
     # Dividir el conjunto de datos en entrenamiento y prueba (90-10) de manera estratificada
     images_train, images_test, labels_train, labels_test = train_test_split(
-    images, labels, test_size=0.1, stratify=labels, random_state=seed[ejecucion]
+    images, labels, test_size=0.1, stratify=labels, random_state=seed[i]
     )
 
     # Crear conjunto de prueba usando `datagen_val_test
     test_data_generator = datagen_val_test.flow(images_test, labels_test, batch_size=batch_size, shuffle=True)
     #Etiquetas del conjunto de prueba
-    for i in range(len(test_data_generator)):
-       images, etiquetas = test_data_generator[i]  
+    for j in range(len(test_data_generator)):
+       images, etiquetas = test_data_generator[j]  
        etiquetas_verdaderas.extend(etiquetas) 
     # Verificar la distribución de clases en los conjuntos de entrenamiento y prueba
     print(f"Conjunto de entrenamiento : {len(labels_train)}")
@@ -168,7 +168,7 @@ for i in range(ejecucion): #Inician las ejecuciones
     time_initial= time.time()
     #Validación cruzada
     k = 5
-    kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed[ejecucion])
+    kf = StratifiedKFold(n_splits=k, shuffle=True, random_state=seed[i])
     print(seed[ejecucion])
     predicciones_acumuladas = np.zeros((len(labels_test), 1))
     with open(ruta1, 'w') as f:
@@ -203,7 +203,7 @@ for i in range(ejecucion): #Inician las ejecuciones
             validation_data=val_data_fold, shuffle=True
           )
           #
-          model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{seed[ejecucion]}.keras')
+          model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.keras')
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
