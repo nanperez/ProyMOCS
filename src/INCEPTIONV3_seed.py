@@ -204,7 +204,7 @@ for i in range(ejecucion): #Inician las ejecuciones
           history = model.fit(
             train_fold_generator,
             epochs=epochs,  # Número de épocas de entrenamiento
-            validation_data=val_data_fold, shuffle=True, verbose=0
+            validation_data=val_data_fold, shuffle=True
           )
           #
           model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.keras')
