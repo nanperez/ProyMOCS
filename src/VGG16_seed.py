@@ -6,7 +6,7 @@ from tensorflow.keras.optimizers import Adam
 from tensorflow.keras.layers import Dense, Flatten, Dropout, BatchNormalization
 import matplotlib.pyplot as plt
 import pathlib
-from keras.applications.inception_v3 import InceptionV3
+from keras.applications.vgg16 import VGG16
 import time
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score, confusion_matrix, roc_auc_score
@@ -25,13 +25,13 @@ import random
 #Parámetros
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
-batch_size = 16 # tamaño de lote
+batch_size = 32 # tamaño de lote
 epochs = 500 # epocas para el entrenamiento
 ejecucion=10
 seed=[11,123,5,901,49,231,501,7,4141,33]
 #Funcion del modelo base 
 def create_modelo_base():
-     modelo_base=InceptionV3(include_top=False,
+     modelo_base=VGG16(include_top=False,
      weights="imagenet",
      input_shape=(img_height, img_width, 3),
      pooling='avg',
@@ -42,17 +42,17 @@ def create_modelo_base():
 def create_model():
     modelo_base=create_modelo_base()
     modelo_base.trainable = False
-    model_Inceptionv3 = Sequential([
+    model_VGG16 = Sequential([
       modelo_base,
       Flatten(),
       Dense(1, activation='sigmoid')
     ])
-    return model_Inceptionv3
+    return model_VGG16
 
 #Funcion para generar el aumento de datos 
 datagen = ImageDataGenerator(
     #rescale=1./255,
-    preprocessing_function=tf.keras.applications.inception_v3.preprocess_input,
+    preprocessing_function=tf.keras.applications.vgg16.preprocess_input,
     rotation_range=55, 
     width_shift_range=0.25,
     height_shift_range=0.25,
@@ -68,7 +68,7 @@ datagen = ImageDataGenerator(
 ## Reescalado para validación y prueba
 datagen_val_test = ImageDataGenerator(
     #rescale=1./255,
-  preprocessing_function=tf.keras.applications.inception_v3.preprocess_input
+ preprocessing_function=tf.keras.applications.vgg16.preprocess_input
 )
 
 #Ruta de los datos 
@@ -101,8 +101,8 @@ for i in range(ejecucion): #Inician las ejecuciones
 
 
     #Crear archivos para almacenar informacion
-    ruta1 = f'/home/mocs/src/Red_InceptionV3_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
-    ruta2= f'/home/mocs/src/Red_InceptionV3_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
+    ruta1 = f'/home/mocs/src/Red_VGG16_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
+    ruta2= f'/home/mocs/src/Red_VGG16_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
     directorio = os.path.dirname(ruta1)
     if not os.path.exists(directorio):
        os.makedirs(directorio)
@@ -206,7 +206,7 @@ for i in range(ejecucion): #Inician las ejecuciones
             validation_data=val_data_fold, shuffle=True
           )
           #
-          model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
+          model.save(f'/home/mocs/src/VGG16_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
