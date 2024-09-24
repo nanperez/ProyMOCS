@@ -25,7 +25,7 @@ import random
 #Parámetros
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.001 # taza de aprendizaje para el entrenamiento
-batch_size = 16 # tamaño de lote
+batch_size = 8 # tamaño de lote
 epochs = 500 # epocas para el entrenamiento
 ejecucion=10
 seed=[11,123,5,901,49,231,501,7,4141,33]
