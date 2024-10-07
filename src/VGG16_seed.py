@@ -26,7 +26,7 @@ import random
 img_height,img_width = 224,224 # tamaño de redimension de lasi magenes
 rate = 0.01 # taza de aprendizaje para el entrenamiento
 batch_size = 8 # tamaño de lote
-epochs = 500 # epocas para el entrenamiento
+epochs = 100 # epocas para el entrenamiento
 ejecucion=10
 seed=[11,123,5,901,49,231,501,7,4141,33]
 #Funcion del modelo base 
@@ -206,7 +206,7 @@ for i in range(ejecucion): #Inician las ejecuciones
             validation_data=val_data_fold, shuffle=True
           )
           #
-          model.save(f'/home/mocs/src/VGG16_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
+          #model.save(f'/home/mocs/src/VGG16_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
