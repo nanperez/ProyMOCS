@@ -26,7 +26,7 @@ import random
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
 rate = 0.01 # taza de aprendizaje para el entrenamiento
 batch_size = 8 # tamaño de lote
-epochs = 100 # epocas para el entrenamiento
+epochs = 300 # epocas para el entrenamiento
 ejecucion=10
 seed=[11,123,5,901,49,231,501,7,4141,33]
 #Funcion del modelo base 
