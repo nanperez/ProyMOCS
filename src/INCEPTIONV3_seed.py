@@ -206,7 +206,7 @@ for i in range(ejecucion): #Inician las ejecuciones
             validation_data=val_data_fold, shuffle=True
           )
           #
-          #model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
+          model.save(f'/home/mocs/src/Inceptionv3_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
