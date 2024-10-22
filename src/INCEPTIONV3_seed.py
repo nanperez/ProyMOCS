@@ -24,7 +24,7 @@ import random
 #-------------------------------------Preámbulo-------------------------------------
 #Parámetros
 img_height,img_width = 299,299 # tamaño de redimension de lasi magenes
-rate = 0.01 # taza de aprendizaje para el entrenamiento
+rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 8 # tamaño de lote
 epochs = 100 # epocas para el entrenamiento
 ejecucion=10
