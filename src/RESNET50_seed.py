@@ -24,7 +24,7 @@ import random
 #-------------------------------------Preámbulo-------------------------------------
 #Parámetros
 img_height,img_width = 224,224 # tamaño de redimension de lasi magenes
-rate = 0.0008 # taza de aprendizaje para el entrenamiento
+rate = 0.001 # taza de aprendizaje para el entrenamiento
 batch_size = 8 # tamaño de lote
 epochs = 100 # epocas para el entrenamiento
 ejecucion=10
@@ -56,8 +56,8 @@ datagen = ImageDataGenerator(
     rotation_range=55, 
     width_shift_range=0.25,
     height_shift_range=0.25,
-    brightness_range=(0.5, 1.5),
-    shear_range=0.2,
+    #brightness_range=(0.5, 1.5),
+    #shear_range=0.2,
     zoom_range=0.3,
     horizontal_flip=True,
     vertical_flip=True,
@@ -101,8 +101,8 @@ for i in range(ejecucion): #Inician las ejecuciones
 
 
     #Crear archivos para almacenar informacion
-    ruta1 = f'/home/mocs/src/Red_RESNET50_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
-    ruta2= f'/home/mocs/src/Red_RESNET50_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}.txt'
+    ruta1 = f'/home/mocs/src/Red_RESNET50_historial_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}_MODIF.txt'
+    ruta2= f'/home/mocs/src/Red_RESNET50_resumen_{rate}_{batch_size}_{epochs}_{i+1}_{seed[i]}_MODIF.txt'
     directorio = os.path.dirname(ruta1)
     if not os.path.exists(directorio):
        os.makedirs(directorio)
@@ -206,7 +206,7 @@ for i in range(ejecucion): #Inician las ejecuciones
             validation_data=val_data_fold, shuffle=True
           )
           #
-          model.save(f'/home/mocs/src/RESNET50_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}.keras')
+          model.save(f'/home/mocs/src/RESNET50_{rate}_{batch_size}_{epochs}_{i+1}_{fold+1}_{seed[i]}_MODIF.keras')
           #----------Calculos del test y métricas-------------------
           test_loss, test_acc = model.evaluate(test_data_generator)
           predictions = model.predict(test_data_generator)
